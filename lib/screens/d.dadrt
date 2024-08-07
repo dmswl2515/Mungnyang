@@ -1,0 +1,99 @@
+  void navigateToMainPage() {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const Mainhome(),
+    ));
+  }
+
+
+    //네이버 로그인 요청
+    Future<void> signInWithNaver() async {
+      await FlutterNaverLogin.logIn().then((value) async {
+        print('value from naver $value');
+
+        NaverAccessToken res = await FlutterNaverLogin.currentAccessToken; 
+        var accesToken = res.accessToken;
+        fetchNaverUserDetail(accesToken);
+
+        var tokenType = res.tokenType;
+
+        print("accesToken $accesToken");
+        print("tokenType $tokenType");
+
+        navigateToMainPage();
+      });  
+    }
+
+  
+    Future<void> fetchNaverUserDetail(String accessToken) async {
+      final response = await http.get(
+        Uri.parse('https://openapi.naver.com/v1/nid/me'),
+        // Send authorization headers to the backend.
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+        },
+      );
+      final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+            print('value from naver $responseJson');
+    }
+
+
+  //네이버 로그인 버튼
+  Widget getNaverLoiginButton() {
+    return InkWell(
+      onTap: () {
+        signInWithNaver();
+      },
+      child: Card(
+        margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+        elevation: 2,
+        child: Ink.image(
+          image: const AssetImage('assets/login/naver.png'),
+          fit: BoxFit.cover,
+          height: 100,
+          width: double.infinity,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color: Colors.transparent,
+            ),
+            child: null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  //네이버 로그아웃
+  Future<void> naverlogout() async {
+    try {
+      await FlutterNaverLogin.logOutAndDeleteToken().then((value) => {
+        print("logout successful"),
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+        ))
+      });  
+    } catch (e) {
+    }
+  }
+
+  Future<void> buttonLogoutAndDeleteTokenPressed() async {
+    try {
+      await FlutterNaverLogin.logOutAndDeleteToken();
+    } catch (e) {
+      
+    }
+  }
+
+  //여러 로그아웃 처리함수
+  Future<void> logout() async {
+    bool logoutSuccessful = false;
+
+    try{
+      await naverlogout();
+      print('로그아웃 성공, SDK에서 토큰 삭제');
+    }
+    catch (error) {
+      print('로그아웃 실패, SDK에서 토큰 삭제 $error');
+    }
+  }
