@@ -31,44 +31,50 @@
 
 #### 로그인
 <img src="https://github.com/user-attachments/assets/b46f0e8e-9aea-4482-a6d7-253fe8c58728" width="400" height="250"/>
-![나의 동영상](https://github.com/user-attachments/assets/87c7fd2c-9711-462a-b409-fa14c55ff968)
-
 
 #### SNS 로그인
 <img src="https://github.com/user-attachments/assets/c36cf5e4-d11d-4e8c-b48e-afd09c56aa3d" width="400" height="250"/>
 <img src="https://github.com/user-attachments/assets/85590a7b-abab-4e9e-840d-2bef264e12e9" width="400" height="250"/>
 
 #### 다크모드 & 화이트모드
-<img src="https://github.com/user-attachments/assets/c1f71eac-109a-492d-b4d2-0bd4ca71a72d" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/27eda8e1-3121-40e9-943c-e509ad26fafc" width="200" height="300"/>
+<img src="https://github.com/user-attachments/assets/95466ee0-7546-4388-897c-6800d9255c29" width="400" height="300"/>
 
 #### 반려동물 정보입력
 <img src="https://github.com/user-attachments/assets/34892794-416d-4932-9ebf-25765b0ad8b2" width="400" height="250"/>
 
 #### 반려동물 정보 불러오기
-<img src="https://github.com/user-attachments/assets/41bdf76c-f93c-413b-ab39-d86c3cc90530" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/0c0759cb-b4cd-4b99-981b-81d4579d1605" width="200" height="300"/>
+<img src="https://github.com/user-attachments/assets/41bdf76c-f93c-413b-ab39-d86c3cc90530" width="400" height="300"/>
 
 #### 행동 관리
-<img src="https://github.com/user-attachments/assets/dcfd8913-2fcf-42a0-aede-35ba2596d0eb" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/1201c3fd-70fe-482d-a542-1115e4770bb1" width="200" height="300"/>
+<img src="https://github.com/user-attachments/assets/dcfd8913-2fcf-42a0-aede-35ba2596d0eb" width="400" height="300"/>
 
 #### 일정 관리
 <img src="https://github.com/user-attachments/assets/08c8ee3e-a4e0-44d6-8c95-e7e00981305d" width="400" height="250"/>
 
 #### 주간 보고서
-<img src="https://github.com/user-attachments/assets/fac178da-7043-4d4d-ad68-dbd8c942e5df" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/bca81bae-b504-4ce4-941a-75171534bfc8" width="200" height="300"/>
+<img src="https://github.com/user-attachments/assets/fac178da-7043-4d4d-ad68-dbd8c942e5df" width="400" height="300"/>
 
 #### 일기장
 <img src="https://github.com/user-attachments/assets/31dcd738-2036-45d9-bb38-854fdc2e8652" width="400" height="250"/>
 
 #### Ai 채팅
-<img src="https://github.com/user-attachments/assets/d63d7819-6fb9-4ad2-b9b1-d1accfa525a0" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/cd38b92f-42fb-41b2-85ae-ef7f65470fa8" width="200" height="300"/>
+<img src="https://github.com/user-attachments/assets/731ec129-f122-47cb-acd4-0addd04480c7" width="400" height="300"/>
 
 #### 호흡수 체크
+<img src="https://github.com/user-attachments/assets/2e650631-df7b-463d-a063-b5e1f4c43189" width="400" height="250"/>
 <img src="https://github.com/user-attachments/assets/66c48fa5-74f7-42f2-ad5f-dc07f0ca9609" width="400" height="250"/>
 <img src="https://github.com/user-attachments/assets/93d91eac-9d9c-4be5-be84-e974b65c0865" width="400" height="250"/>
 <img src="https://github.com/user-attachments/assets/f0ab3995-56b2-4a3b-b9f7-93634fcc1186" width="400" height="250"/>
 
 #### 미니 게임
-<img src="https://github.com/user-attachments/assets/b2b444ed-1d78-4898-a902-094b4f17d302" width="400" height="250"/>
+<img src="https://github.com/user-attachments/assets/b2b444ed-1d78-4898-a902-094b4f17d302" width="400" height="300"/>
+<img src="https://github.com/user-attachments/assets/1e43ff80-950b-48c7-a19d-262a7528296d" width="200" height="300"/>
+
 
 
 ## 4. TROUBLESHOOTING
