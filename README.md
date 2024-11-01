@@ -31,11 +31,11 @@
 
 #### 로그인
 <img src="https://github.com/user-attachments/assets/b46f0e8e-9aea-4482-a6d7-253fe8c58728" width="400" height="250"/>
+![나의 동영상](https://github.com/user-attachments/assets/87c7fd2c-9711-462a-b409-fa14c55ff968)
+
 
 #### SNS 로그인
 <img src="https://github.com/user-attachments/assets/c36cf5e4-d11d-4e8c-b48e-afd09c56aa3d" width="400" height="250"/>
-
-#### Naver 사용자 정보 활용
 <img src="https://github.com/user-attachments/assets/85590a7b-abab-4e9e-840d-2bef264e12e9" width="400" height="250"/>
 
 #### 다크모드 & 화이트모드
