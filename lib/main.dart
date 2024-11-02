@@ -14,14 +14,15 @@ import 'package:totalexam/screens/splash_screen.dart';
 
 import 'db/db_helper.dart';
 import 'reference/constants.dart';
+import 'reference/Config.dart';
 import 'reference/text_provider.dart';
 
 FirebaseOptions get firebaseOptions => const FirebaseOptions(
-      appId: '1:58500999507:android:7342902a060c0615d199a6',
-      apiKey: 'AIzaSyA6zQKGghYi8wqZKqUuk1741Wg1xmVINQI',
-      projectId: 'flutter-total-f3299',
-      messagingSenderId: '58500999507', // 프로젝트 번호
-      storageBucket: 'flutter-total-f3299.appspot.com',
+      appId: FIREBASE_APP_ID,
+      apiKey: FIREBASE_API_KEY,
+      projectId: FIREBASE_PROJECT_ID,
+      messagingSenderId: FIREBASE_MESSAGING_SENDER_ID, 
+      storageBucket: FIREBASE_STORAGE_BUCKET,
     );
 
 Future<void> main() async {

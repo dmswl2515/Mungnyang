@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-const String GOOGLE_MAPS_API_KEY = "AIzaSyARKARhG6uoTIwn7H4NOcdljqY8VF8njkQ";
-const String GEMINI_API_KEY = "AIzaSyD7ZTezDF5VxXAEwhdHZfSzVBYPAOXjLXY";
-
 const primaryColor = Color(0xFF330A30);
 const secondaryColor = Color(0xFFE007D7);
 const secondaryColor2 = Color(0xFF8E07E0);

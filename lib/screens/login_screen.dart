@@ -7,7 +7,6 @@ import 'package:totalexam/controllers/user_controller.dart';
 import 'package:totalexam/mainhome.dart';
 import 'package:totalexam/pages/page_a1.dart';
 import 'package:totalexam/reference/drawer.dart';
-import 'package:totalexam/screens/home_screen.dart';
 import 'package:totalexam/screens/registration_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';

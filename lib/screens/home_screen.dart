@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:totalexam/screens/home_screen(storage).dart';
 import 'package:totalexam/screens/login_screen.dart';
-import '../db/firestore.dart';
-import '../x/login_screen(google).dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,16 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: const TextStyle(fontSize: 20, 
                                        fontWeight: FontWeight.bold),
               ),
-              ElevatedButton(
-                child: const Text('관리자 페이지',
-                            style: TextStyle(fontSize: 24),),
-                onPressed: () {
-                  Navigator.push( //페이지간 이동이 있을 때 Navigator.push를 사용하기
-                    context,
-                    MaterialPageRoute(builder: (context) => const Firestore(title: '관리자페이지')), 
-                  );
-                },  
-              ),
+             
               ElevatedButton(
                 child: const Text('사진 업로드',
                             style: TextStyle(fontSize: 24),),
