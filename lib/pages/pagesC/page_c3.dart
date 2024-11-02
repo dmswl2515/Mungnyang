@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:totalexam/pages/pagesC/pet_activites/eat_page.dart';
 import 'package:totalexam/pages/pagesC/pet_activites/edit_page.dart';
 import 'package:totalexam/pages/pagesC/pet_activites/home_page1.dart';
@@ -48,6 +49,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  String? selectedPetId; //선택된 반려동물의 ID를 저장
+  String? selectedPetName;  //선택된 반려동물의 이름을 저장
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +61,13 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   //데이터 가져오기
   Future<void> _fetchFromFirestore() async {
   try {
-    final snapshot = await FirebaseFirestore.instance.collection('pet_activities').get();
+    Query query = FirebaseFirestore.instance.collection('pet_activities');
+    
+    if (selectedPetId != null) {
+      query = query.where('petId', isEqualTo: selectedPetId);
+    }
+    
+    final snapshot = await query.get();
     final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       final timestamp = data['timestamp'] as Timestamp;
@@ -103,9 +113,15 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   setState(() {
     clickedImages = allClickedImages.where((image) {
       final imageDate = image['time'] as DateTime;
-      return imageDate.year == date.year &&
-             imageDate.month == date.month &&
-             imageDate.day == date.day;
+      final bool isSameDate = imageDate.year == date.year &&
+                              imageDate.month == date.month &&
+                              imageDate.day == date.day;
+
+      if (selectedPetId != null) {
+        return isSameDate && image['petId'] == selectedPetId;
+      } else {
+        return isSameDate;
+      }
     }).toList();
     print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
   });
@@ -115,7 +131,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   Future<void> _saveToFirestore(int index, DateTime time) async {
   try {
-    final docRef = await FirebaseFirestore.instance.collection('pet_activities').add({
+    await FirebaseFirestore.instance.collection('pet_activities').add({
       'category': imageNames[index],
       'title': '제목을 입력해주세요',
       'memo': '자세한 정보를 입력해주세요',
@@ -123,20 +139,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
       'startTime': DateFormat('h:mm a').format(time),
       'endTime': "09:30 PM",
       'timestamp': time.toUtc(),
+      'petId': selectedPetId ?? 'all_pets', // 선택된 반려동물이 있으면 해당 ID를 저장하고, 없으면 'all_pets'로 저장
     });
-    print('Activity saved to Firestore with ID: ${docRef.id}');
-    
-    setState(() {
-      clickedImages.add({
-        'id': docRef.id,
-        'index': index,
-        'time': time,
-        'title': '제목을 입력해주세요',
-        'memo': '자세한 정보를 입력해주세요',
-        'startTime': DateFormat('h:mm a').format(time),
-        'endTime': "09:30 PM",
-      });
-    });
+    _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
   } catch (e) {
     print('Error saving activity to Firestore: $e');
   }
@@ -209,6 +214,98 @@ void _testFirestoreQuery() async {
         centerTitle: true,  //가운데 정렬
         title: const Text('반려동물케어'),
         backgroundColor: Colors.deepPurple[200],
+        actions: [
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                backgroundColor: Colors.deepPurple[200],
+                context: context, 
+                builder: (BuildContext context) {
+                  return FutureBuilder<QuerySnapshot>(
+                    future: FirebaseFirestore.instance.collection('pets').get(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(child: Text('반려동물 정보가 없습니다.'));
+                      }
+
+                      return Container(
+                        padding: EdgeInsets.all(20),
+                        height: 300,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '반려동물 선택',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text('케어할 반려동물을 선택해주세요'),
+                            SizedBox(height: 20),
+                            Expanded(
+                              child: GridView.builder(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3, // 한 줄에 3개의 항목을 배치
+                                  crossAxisSpacing: 10.0, // 아이템 사이의 가로 간격
+                                  mainAxisSpacing: 10.0, // 아이템 사이의 세로 간격
+                                  childAspectRatio: 1, // 아이템의 가로세로 비율
+                                ),
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, index) {
+                                  var doc = snapshot.data!.docs[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedPetId = doc.id; //선택된 반려동물의 ID를 저장
+                                        selectedPetName = doc['name'];  //선택된 반려동물의 이름을 저장 
+                                      });
+                                      Navigator.pop(context);  // 선택 후 모달 닫기
+                                    },
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(doc['image']),
+                                          radius: 30, // 프로필 이미지 크기
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(doc['name']),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }, 
+                                  child: Text('취소'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+              );
+            },
+            icon: CircleAvatar(
+              backgroundImage: AssetImage('assets/images/부비.png'), 
+              radius: 20,
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -428,5 +525,12 @@ void _testFirestoreQuery() async {
                 );
   }
 
+  //반려동물 이미지 가져오기
+  Future<String> _getProfileImageUrl(String imagePath) async {
+  // Firebase Storage에서 이미지의 다운로드 URL을 가져옵니다.
+  Reference storageReference = FirebaseStorage.instance.ref().child(imagePath);
+  String downloadUrl = await storageReference.getDownloadURL();
+  return downloadUrl;
+}
 }
   

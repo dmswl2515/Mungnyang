@@ -137,7 +137,7 @@ class _PageC2State extends State<PageC2> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '반려동물 정보 입력(Page C-2)',
+              '반려동물 정보 입력',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
