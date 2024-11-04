@@ -16,15 +16,10 @@ import 'pagesC/Liten_c3_2.dart';
 import 'pagesC/game_c3_2.dart';
 
 class PageA1 extends StatefulWidget {
-  final String userName;
-  final String userEmail;
-  final String userProfileImage;
+
 
   const PageA1({
     Key? key,
-    required this.userName,
-    required this.userEmail,
-    required this.userProfileImage,
   }) : super(key: key);
 
   
@@ -48,9 +43,6 @@ class _PageA1State extends State<PageA1> {
   @override
   void initState() {
     super.initState();
-    userName = widget.userName;
-    userEmail = widget.userEmail;
-    userProfileImage = widget.userProfileImage;
   }
 
 

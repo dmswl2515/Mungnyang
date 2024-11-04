@@ -51,19 +51,17 @@ class _MainhomeState extends State<Mainhome> {
       ),
       darkTheme: Themes.dark,
       themeMode: ThemeServices().theme,
-      home: const MyHomePage(
-        title: 'mainhome',
-        userName: '',
-        userEmail: '',
-        userProfileImage: '',
-      ),
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => Mainhome()),
+        GetPage(name: '/', page: () => const MyHomePage(
+          title: 'mainhome',
+          userName: '',
+          userEmail: '',
+          userProfileImage: '',
+        )),
         GetPage(name: '/musichome', page: () => const MusichomeScreen()),
-        // GetPage(name: '/song', page: () => const SongScreen()),
-        // GetPage(name: '/playlist', page: () => const PlaylistScreen()),
         GetPage(name: '/mainhome', page: () => const Mainhome()),
+        GetPage(name: '/pageC1', page: () => const PageC1()),
       ],
       debugShowCheckedModeBanner: false,
     );
@@ -93,12 +91,8 @@ class MyHomePage extends StatefulWidget {
 //Flutter에서 애니메이션을 구현할 때 사용하는 믹스인(버튼)
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  ////////////////////////버튼//////////////////////////////////////
-  late AnimationController _controller;
-  late Animation _animation;
-  bool toggle = true; //curve navigationbar 버튼의 상태를 관리하기 위한 변수
 
-  @override
+       @override
   void initState() {
     super.initState();
     _controller = AnimationController(
@@ -119,9 +113,9 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-  @override
+    @override
   void dispose() {
-    _controller.dispose(); // Make sure to dispose of the controller
+    _controller.dispose(); 
     super.dispose();
   }
 
@@ -141,7 +135,12 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  //버튼 여러개 설정                    //여기서 버튼을 안보이게 함
+  ////////////////////////버튼//////////////////////////////////////
+  late AnimationController _controller;
+  late Animation _animation;
+  bool toggle = true; //curve navigationbar 버튼의 상태를 관리하기 위한 변수
+
+  //버튼 여러개 설정 
   Alignment alignment1 = Alignment(0.0, 5.0);
   Alignment alignment2 = Alignment(0.0, 5.0);
   Alignment alignment3 = Alignment(0.0, 5.0);
@@ -156,13 +155,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   List<Widget> _buildScreens() {
     return [
-      const PageA1(
-        userName: '',
-        userEmail: '',
-        userProfileImage: '',
-      ),
+      const PageA1(),
       const PageB1(),
-      // const PageC2(title: '반려동물 정보 입력(Page C-2)',),
       const PageC1(),
       const PageD1(),
       const PageE1(),
@@ -254,22 +248,22 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.deepPurple.shade200,
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
-                    onTap: () => _navigateToPage(PageC2(
+                    onTap: () => _navigateToPage(const PageC2(
                       title: '반려동물 정보 입력(Page C-2)',
                     )), // 버튼 클릭 시 Page1으로 이동
-                    child: Icon(Icons.pets, color: Colors.black87),
+                    child: const Icon(Icons.pets, color: Colors.black87),
                   ),
                 ),
               ),
               AnimatedAlign(
                 //두번째 추가 버튼
                 duration: toggle
-                    ? Duration(milliseconds: 275)
-                    : Duration(milliseconds: 875),
+                    ? const Duration(milliseconds: 275)
+                    : const Duration(milliseconds: 875),
                 alignment: alignment2,
                 curve: toggle ? Curves.easeIn : Curves.elasticInOut,
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 275),
+                  duration: const Duration(milliseconds: 275),
                   curve: toggle ? Curves.easeIn : Curves.easeOut,
                   height: size2,
                   width: size2,

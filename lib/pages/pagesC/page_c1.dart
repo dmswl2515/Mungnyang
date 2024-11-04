@@ -17,7 +17,7 @@ class _PageC1State extends State<PageC1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Page C-1'),
+        title: const Text('Page C1'),
       ),
       drawer: AppDrawer(), // AppDrawer 사용
       body: Center(

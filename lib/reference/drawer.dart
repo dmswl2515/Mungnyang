@@ -23,6 +23,7 @@ class _AppDrawerState extends State<AppDrawer> {
     _fetchPets();
   }
 
+  //Firestore의 'pets' 컬렉션에서 반려동물 정보 가져오기
   Future<void> _fetchPets() async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('pets').get();
@@ -34,6 +35,7 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 
+  //반려동물 생년월일에 따라 현재 나의 계산
   int _calculateAge(DateTime birthDate) {
     final today = DateTime.now();
     int age = today.year - birthDate.year;
@@ -59,7 +61,7 @@ class _AppDrawerState extends State<AppDrawer> {
       color: Colors.amber[100],
       elevation: 0,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.deepPurple, width: 1),
+        side: const BorderSide(color: Colors.deepPurple, width: 1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
@@ -82,7 +84,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     height: 100,
                     fit: BoxFit.cover,
                   ),
-            SizedBox(width: 20.0),
+            const SizedBox(width: 20.0),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,11 +125,11 @@ class _AppDrawerState extends State<AppDrawer> {
                   backgroundImage: NetworkImage(_userController.userProfileImage.value),
                   
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 40,),
+                    const SizedBox(height: 40,),
                     Text(
                       _userController.userName.value,
                       style: TextStyle(
@@ -136,7 +138,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         color: Colors.grey[850],
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       _userController.userEmail.value,
                       style: TextStyle(
@@ -151,7 +153,7 @@ class _AppDrawerState extends State<AppDrawer> {
           )),
           _buildListTile(Icons.home, "H O M E", () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/homepage');
+            Navigator.pushNamed(context, '/');
           }),
           _buildListTile(Icons.person, "P R O F I L E", () {
             setState(() {
@@ -172,7 +174,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           _buildListTile(Icons.settings, "S E T T I N G S", () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/settingspage');
+            Navigator.pushNamed(context, '/pageC1');
           }),
           SizedBox(height: 20),
         ],

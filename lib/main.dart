@@ -27,14 +27,14 @@ FirebaseOptions get firebaseOptions => const FirebaseOptions(
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //make navigation bar transparent
+  
   SystemChrome.setSystemUIOverlayStyle(
-    //web에서 사용하는 것
+    
     const SystemUiOverlayStyle(
       systemNavigationBarColor: Color.fromARGB(0, 133, 204, 137),
     ),
   );
-  //make flutter draw behind navigation bar
+  
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   Gemini.init(apiKey: GEMINI_API_KEY);
@@ -47,7 +47,7 @@ Future<void> main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (context) => TextProvider(), // TextProvider를 제공
+      create: (context) => TextProvider(), 
       child: MyApp(),
     ),
   );
@@ -64,7 +64,8 @@ class MyApp extends StatelessWidget {
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      //home: LoginScreen(),
+      home: Mainhome(),
       debugShowCheckedModeBanner: false,
     );
   }
