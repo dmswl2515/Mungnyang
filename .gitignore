@@ -43,6 +43,8 @@ app.*.map.json
 /android/app/release
 
 # API KEY
-lib/reference/Config.dart
-android/app/src/main/AndroidManifest.xml
-android/app/src/google-services.json
+/lib/reference/Config.dart
+/android/app/google-services.json
+/android/app/src/debug/AndroidManifest.xml
+/android/app/src/profile/AndroidManifest.xml
+

@@ -184,8 +184,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     User? user = _auth.currentUser;
     print(user!.email);
     print(user.uid);
-    // userModel.email = user!.email;
-    // userModel.uid = user.uid;
 
     showSnackBar("Account created successfully :)",
         const Duration(milliseconds: 1000));
