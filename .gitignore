@@ -43,7 +43,6 @@ app.*.map.json
 /android/app/release
 
 # API KEY
-Config.dart
-
-# Firebase
-google-services.json
+lib/reference/Config.dart
+android/app/src/main/AndroidManifest.xml
+android/app/src/google-services.json
