@@ -53,7 +53,8 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   //선택된 반려동물의 이름을 기본값으로 설정
   String selectedPetName = "all_pets";  
-
+  // 선택된 반려동물의 이미지를 저장할 변수
+  String? selectedPetImage;
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
                       return Container(
                         padding: EdgeInsets.all(20),
-                        height: 300,
+                        height: 400,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -106,7 +107,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                             const SizedBox(height: 20),
                             Expanded(
                               child: GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3, // 한 줄에 3개의 항목을 배치
                                   crossAxisSpacing: 10.0, // 아이템 사이의 가로 간격
                                   mainAxisSpacing: 10.0, // 아이템 사이의 세로 간격
@@ -119,6 +120,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                                     onTap: () {
                                       setState(() {
                                         selectedPetName = doc['name'];  //선택된 반려동물의 이름을 저장 
+                                        selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
                                       });
                                       Navigator.pop(context);  // 선택 후 모달 닫기
                                     },
@@ -155,8 +157,10 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                 }
               );
             },
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/부비.png'), 
+            icon: CircleAvatar(
+              backgroundImage: selectedPetImage != null
+                ? NetworkImage(selectedPetImage!)
+                : const AssetImage('assets/images/부비.png'), 
               radius: 20,
             ),
           ),
@@ -193,15 +197,18 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                   return Positioned(
                     bottom: 1,
                     child: Container( //마커
-                      width: 13,
-                      height: 13,
-                      child : Stack(
+                      width: 15,
+                      height: 15,
+                      child : const Stack(
                         alignment : Alignment.center,
                         children: [
-                          Icon(
-                            Icons.pets,
-                            color : Colors.black54,
-                            size: 13,
+                          Positioned(
+                            top: -1,
+                            child: Icon(
+                              Icons.pets,
+                              color : Colors.black54,
+                              size: 13,
+                            ),
                           ),
                           // Text( 활동데이터 카운트 필요시 사용
                           //   '${dateCounts[localDate]}',
@@ -215,7 +222,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                     ),
                   );
                 }
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               },
             ),
           ),
