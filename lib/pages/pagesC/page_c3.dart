@@ -35,8 +35,13 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     '심박수',
   ];
 
+  //현재 선택된 인덱스를 저장할 변수
+  int? _currentSelectedIndex;
+  
   //버튼을 누르면 page1에 인덱스 전달
   void _updateTextProvider(int index) {
+    _currentSelectedIndex = index;
+    print('_currentSelectdIndex: $_currentSelectedIndex');
     Provider.of<TextProvider>(context, listen: false).updateIndex(index);
   }
 
@@ -45,7 +50,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> clickedImages = [];      //선택된 날짜의 데이터
 
   //캘린더
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -159,15 +164,32 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   }
 }
 
+  // 항목 삭제 함수
   Future<void> _deleteItem(int index) async {
   final id = clickedImages[index]['id'];
 
   try {
     await FirebaseFirestore.instance.collection('pet_activities').doc(id).delete();
     print('Activity deleted from Firestore with ID: $id');
+    print('index: $index');
     
     setState(() {
       clickedImages.removeAt(index);
+      if(_currentSelectedIndex == index)
+      {
+        print('_currentSelectedIndex: $_currentSelectedIndex');
+        if(clickedImages.isNotEmpty) {
+          int newIndex = clickedImages.length - 1 ;
+          _updateTextProvider(newIndex); //이전의 인덱스를 provider에 전달
+          
+          print('newIndex: $newIndex');
+          print('_updateTextProvider: $_updateTextProvider');
+
+        } else {
+          // 만약 clickedImages가 비어있다면, provider에 null을 전달
+          Provider.of<TextProvider>(context, listen: false).updateIndex(-1);
+        }
+      }
     });
   } catch (e) {
     print('Error deleting activity from Firestore: $e');
