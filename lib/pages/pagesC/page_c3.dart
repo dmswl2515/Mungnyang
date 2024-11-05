@@ -37,15 +37,8 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   //현재 선택된 인덱스를 저장할 변수
   int? _currentSelectedIndex;
-  
-  //버튼을 누르면 page1에 인덱스 전달
-  void _updateTextProvider(int index) {
-    _currentSelectedIndex = index;
-    print('_currentSelectdIndex: $_currentSelectedIndex');
-    Provider.of<TextProvider>(context, listen: false).updateIndex(index);
-  }
 
-   // 클릭한 이미지의 정보를 저장하는 리스트
+  //클릭한 이미지의 정보를 저장하는 리스트
   List<Map<String, dynamic>> allClickedImages = [];   //전체 데이터
   List<Map<String, dynamic>> clickedImages = [];      //선택된 날짜의 데이터
 
@@ -54,188 +47,21 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  //캘린더의 마크표시
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Map<DateTime, int> dateCounts = {};
+
   //선택된 반려동물의 이름을 기본값으로 설정
   String selectedPetName = "all_pets";  
+
 
   @override
   void initState() {
     super.initState();
-    _fetchFromFirestore();  // Firebase에서 데이터 가져오기
+    _fetchFromFirestore();      //활동 데이터 가져오기
+    fetchPetActivitiesDates();  //활동 데이터 입력된 날짜 가져오기
   }
-
-  //데이터 가져오기
-  Future<void> _fetchFromFirestore() async {
-  try {
-    //pet_activites 컬렉션에서 데이터를 가져오기 위해 query 객체 생성
-    Query query = FirebaseFirestore.instance.collection('pet_activities');
-    print('query: $query');
-
-    // 선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
-    if (selectedPetName != null) {
-      print('Selected pet Name: $selectedPetName'); 
-      query = query.where('petName', isEqualTo: selectedPetName);
-    }
-    
-    //쿼리에 해당하는 문서를 snapshot으로 가져오기
-    final snapshot = await query.get();
-    final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-
-      // 'date' 필드를 DateTime 형식으로 변환 (Timestamp일 경우만 변환)
-      final date = data['date'] is Timestamp
-          ? (data['date'] as Timestamp).toDate()
-          : DateTime.now(); // date가 null일 경우 기본값으로 현재 시간 사용
-      
-      return {
-        'id': doc.id,
-        'index': imageNames.indexOf(data['category']),
-        'date': data['date'],  // Timestamp를 DateTime으로 변환
-        'title': data['title'],
-        'memo': data['memo'] ?? '자세한 정보를 입력해주세요',
-        'startTime': data['startTime'],
-        'endTime': data['endTime'],
-        'petName': data['petName'],
-        'timestamp': data['timestamp'],
-        
-      };
-    }).toList();
-
-    print('Data loaded from Firestore: $loadedData'); // 데이터 로드 확인
-    
-    allClickedImages = loadedData;
-    _filterImagesByDate(_selectedDay ?? DateTime.now());
-    print('Data fetched and setState called successfully');
-  } catch (e) {
-    print('Error fetching data from Firestore: $e');
-  }
-}
-
-  // 날짜 선택 시 호출되는 함수
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-        
-        // 선택한 날짜에 해당하는 이미지만 필터링
-        _filterImagesByDate(selectedDay);
-      });
-    }
-  }
-
-  // 선택한 날짜에 해당하는 이미지만 필터링하는 함수
-  void _filterImagesByDate(DateTime date) {
-  print('Filtering images for date: $date and petName: $selectedPetName');
-  print('All clicked images before filtering: $allClickedImages');
-
-  setState(() {
-    clickedImages = allClickedImages.where((image) {
-      final imageDate = DateTime.parse(image['date']); // 문자열을 DateTime으로 변환
-      final bool isSameDate = imageDate.year == date.year &&
-                              imageDate.month == date.month &&
-                              imageDate.day == date.day;
-
-      if (selectedPetName != null) {
-        return isSameDate && image['petName'] == selectedPetName;
-      } else {
-        return isSameDate;
-      }
-
-    }).toList();
-    print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
-  });
-}
-
-  Future<void> _saveToFirestore(int index, DateTime time) async {
-  try {
-    await FirebaseFirestore.instance.collection('pet_activities').add({
-      'category': imageNames[index],
-      'title': imageNames[index],
-      'memo': '자세한 정보를 입력해주세요',
-      'date': DateFormat('yyyy-MM-dd').format(time),
-      'startTime': DateFormat('h:mm a').format(time),
-      'endTime': "09:30 PM",
-      'timestamp': Timestamp.fromDate(time),
-      'petName': selectedPetName ?? 'all_pets', // 선택된 반려동물이 있으면 해당 이름을 저장하고, 없으면 'all_pets'로 저장
-    });
-    _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
-  } catch (e) {
-    print('Error saving activity to Firestore: $e');
-  }
-}
-
-  // 항목 삭제 함수
-  Future<void> _deleteItem(int index) async {
-  final id = clickedImages[index]['id'];
-
-  try {
-    await FirebaseFirestore.instance.collection('pet_activities').doc(id).delete();
-    print('Activity deleted from Firestore with ID: $id');
-    print('index: $index');
-    
-    setState(() {
-      clickedImages.removeAt(index);
-      if(_currentSelectedIndex == index)
-      {
-        print('_currentSelectedIndex: $_currentSelectedIndex');
-        if(clickedImages.isNotEmpty) {
-          int newIndex = clickedImages.length - 1 ;
-          _updateTextProvider(newIndex); //이전의 인덱스를 provider에 전달
-          
-          print('newIndex: $newIndex');
-          print('_updateTextProvider: $_updateTextProvider');
-
-        } else {
-          // 만약 clickedImages가 비어있다면, provider에 null을 전달
-          Provider.of<TextProvider>(context, listen: false).updateIndex(-1);
-        }
-      }
-    });
-  } catch (e) {
-    print('Error deleting activity from Firestore: $e');
-  }
-}
-
-  //페이지수정
-  Future<void> _navigateToPage(int clickedIndex, int index) async {
-  var data = {
-    'id': clickedImages[index]['id'],
-    'title': clickedImages[index]['title'],
-    'memo': clickedImages[index]['memo'],
-    'startTime': clickedImages[index]['startTime'] ?? '09:00',
-    'endTime': clickedImages[index]['endTime'] ?? '21:30',
-    'date': DateTime.now(),
-  };
-
-  bool? result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => EditPage(
-        documentId: clickedImages[index]['id'],
-        initialCategory: imageNames[clickedIndex],
-        initialTitle: clickedImages[index]['title'],
-        initialMemo: clickedImages[index]['memo'],
-        initialStartTime: DateFormat('HH:mm').parse(data['startTime']),
-        initialEndTime: DateFormat('HH:mm').parse(data['endTime']),
-      ),
-    ),
-  );
-
-  print('Result from EditPage: $result'); // 반환값 확인
-
-  if (result == true) {
-    print("Fetching data from Firestore...");
-    await _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
-  }
-}
-
-void _testFirestoreQuery() async {
-  final snapshot = await FirebaseFirestore.instance.collection('pet_activities').where('date', isEqualTo: '2024-08-01').get();
-  final documents = snapshot.docs.map((doc) => doc.data()).toList();
-  print('Test Firestore Query: $documents');
-}
   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,16 +94,16 @@ void _testFirestoreQuery() async {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               '반려동물 선택',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 10),
-                            Text('케어할 반려동물을 선택해주세요'),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 10),
+                            const Text('케어할 반려동물을 선택해주세요'),
+                            const SizedBox(height: 20),
                             Expanded(
                               child: GridView.builder(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -302,7 +128,7 @@ void _testFirestoreQuery() async {
                                           backgroundImage: NetworkImage(doc['image']),
                                           radius: 30, // 프로필 이미지 크기
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         Text(doc['name']),
                                       ],
                                     ),
@@ -317,7 +143,7 @@ void _testFirestoreQuery() async {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   }, 
-                                  child: Text('취소'),
+                                  child: const Text('취소'),
                                 ),
                               ],
                             ),
@@ -329,7 +155,7 @@ void _testFirestoreQuery() async {
                 }
               );
             },
-            icon: CircleAvatar(
+            icon: const CircleAvatar(
               backgroundImage: AssetImage('assets/images/부비.png'), 
               radius: 20,
             ),
@@ -346,8 +172,8 @@ void _testFirestoreQuery() async {
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
-            onDaySelected: _onDaySelected, // 수정된 콜백 사용
-            onFormatChanged: (format) {
+            onDaySelected: _onDaySelected, //날짜를 선택했을 때 호출되는 함수
+            onFormatChanged: (format) {    //캘린더 형식이 변할 때 호출되는 함수
               if (_calendarFormat != format) {
                 setState(() {
                   _calendarFormat = format;
@@ -357,6 +183,41 @@ void _testFirestoreQuery() async {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                final localDate = DateTime(date.year, date.month, date.day);
+                print('localDate : $localDate');
+                print('dateCounts : $dateCounts');
+
+                if(dateCounts.containsKey(localDate)) {
+                  return Positioned(
+                    bottom: 1,
+                    child: Container( //마커
+                      width: 13,
+                      height: 13,
+                      child : Stack(
+                        alignment : Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.pets,
+                            color : Colors.black54,
+                            size: 13,
+                          ),
+                          // Text( 활동데이터 카운트 필요시 사용
+                          //   '${dateCounts[localDate]}',
+                          //   style: TextStyle(
+                          //     fontSize: 10,
+                          //     color: Colors.white,
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
           ),
           SizedBox(
             height: 100,
@@ -425,59 +286,12 @@ void _testFirestoreQuery() async {
     );
   }
 
-  //수정, 삭제 슬라이더
-  Slidable buttonSlider(int index, int clickedIndex, String timeWithParentheses) {
-  return Slidable(
-    key: ValueKey(index),
-    endActionPane: ActionPane(
-      motion: const ScrollMotion(),
-      dismissible: DismissiblePane(onDismissed: () => _deleteItem(index)),
-      children: [
-        SlidableAction(
-          onPressed: (context) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  String startTimeStr = clickedImages[index]['startTime'] ?? '09:00 AM';
-                  String endTimeStr = clickedImages[index]['endTime'] ?? '09:30 PM';
-
-                  // 24시간 형식을 12시간 형식으로 변환
-                  DateTime startTime = DateFormat('HH:mm').parse(startTimeStr);
-                  DateTime endTime = DateFormat('HH:mm').parse(endTimeStr);
-
-                  return EditPage(
-                    documentId: clickedImages[index]['id'],
-                    initialCategory: imageNames[clickedIndex],
-                    initialTitle: clickedImages[index]['title'],
-                    initialMemo: clickedImages[index]['memo'],
-                    initialStartTime: startTime,
-                    initialEndTime: endTime,
-                  );
-                },
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(8.0),
-          backgroundColor: Colors.deepPurple.shade400,
-          foregroundColor: Colors.white,
-          icon: Icons.edit,
-          label: '수정',
-        ),
-        SizedBox(width: 5,),
-        SlidableAction(
-          onPressed: (context) => _deleteItem(index), // 삭제 버튼 클릭 시
-          borderRadius: BorderRadius.circular(8.0),
-          backgroundColor: const Color(0xFFFE4A49),
-          foregroundColor: Colors.white,
-          icon: Icons.delete,
-          label: '삭제',
-        ),
-      ],
-    ),
-    child: _buttonStyle(clickedIndex, timeWithParentheses, index),
-  );
-}
+  //버튼을 누르면 page1에 인덱스 전달
+  void _updateTextProvider(int index) {
+    _currentSelectedIndex = index;
+    print('_currentSelectdIndex: $_currentSelectedIndex');
+    Provider.of<TextProvider>(context, listen: false).updateIndex(index);
+  }
 
   //clicked button 스타일
   Padding _buttonStyle(int clickedIndex, String timeWithParentheses, int index) {
@@ -560,6 +374,272 @@ void _testFirestoreQuery() async {
   Reference storageReference = FirebaseStorage.instance.ref().child(imagePath);
   String downloadUrl = await storageReference.getDownloadURL();
   return downloadUrl;
+}
+
+  //반려동물 활동 전체 데이터 가져오기
+  Future<void> _fetchFromFirestore() async {
+  try {
+    //pet_activites 컬렉션에서 데이터를 가져오기 위해 query 객체 생성
+    Query query = FirebaseFirestore.instance.collection('pet_activities');
+    print('query: $query');
+
+    // 선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
+    if (selectedPetName != null) {
+      print('Selected pet Name: $selectedPetName'); 
+      query = query.where('petName', isEqualTo: selectedPetName);
+    }
+    
+    //쿼리에 해당하는 문서를 snapshot으로 가져오기
+    final snapshot = await query.get();
+    final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+
+      // 'date' 필드를 DateTime 형식으로 변환 (Timestamp일 경우만 변환)
+      final date = data['date'] is Timestamp
+          ? (data['date'] as Timestamp).toDate()
+          : DateTime.now(); // date가 null일 경우 기본값으로 현재 시간 사용
+
+      return {
+        'id': doc.id,
+        'index': imageNames.indexOf(data['category']),
+        'date': data['date'],  
+        'title': data['title'],
+        'memo': data['memo'] ?? '자세한 정보를 입력해주세요',
+        'startTime': data['startTime'],
+        'endTime': data['endTime'],
+        'petName': data['petName'],
+        'timestamp': data['timestamp'],
+      };
+    }).toList();
+    
+
+    print('Data loaded from Firestore: $loadedData'); // 데이터 로드 확인
+    
+    allClickedImages = loadedData;
+    _filterImagesByDate(_selectedDay ?? DateTime.now());
+    print('Data fetched and setState called successfully');
+  } catch (e) {
+    print('Error fetching data from Firestore: $e');
+  }
+}
+
+  //날짜 선택 시 호출되는 함수
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+        
+        // 선택한 날짜에 해당하는 이미지만 필터링
+        _filterImagesByDate(selectedDay);
+      });
+    }
+  }
+
+  //선택한 날짜에 해당하는 이미지만 필터링하는 함수
+  void _filterImagesByDate(DateTime date) {
+  print('Filtering images for date: $date and petName: $selectedPetName');
+  print('All clicked images before filtering: $allClickedImages');
+
+  setState(() {
+    clickedImages = allClickedImages.where((image) {
+      final imageDate = DateTime.parse(image['date']); // 문자열을 DateTime으로 변환
+      final bool isSameDate = imageDate.year == date.year &&
+                              imageDate.month == date.month &&
+                              imageDate.day == date.day;
+
+      if (selectedPetName != null) {
+        return isSameDate && image['petName'] == selectedPetName;
+      } else {
+        return isSameDate;
+      }
+    }).toList();
+    print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
+  });
+}
+
+  //활동데이터가 입력되어 있는 날짜 가져오기
+  Future<void> fetchPetActivitiesDates() async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+            .collection('pet_activities')
+            .orderBy("date")
+            .get();
+      
+      List<DateTime> fetchedDates = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('date')) {
+          return DateTime.parse(doc['date'] as String);
+        } else {
+          return null;
+        }
+      }).where((date) => date != null).map((date) => date as DateTime).toList();
+      // 날짜의 개수 세기
+      countDates(fetchedDates);
+
+      setState(() {});
+    } catch (e) {
+      print("Error fetching pet activities dates: $e");
+    }
+  }
+
+  //날짜별 활동데이터 갯수 계산하는 함수
+  void countDates(List<DateTime> dates) {
+    for (var date in dates) {
+      // 날짜를 기준으로 일(day)만 비교하기 위해 날짜를 정리
+      final dateOnly = DateTime(date.year, date.month, date.day).toLocal();
+      print('dateOnly: $dateOnly');
+
+      // 이미 존재하는 날짜라면 카운트를 증가
+      if (dateCounts.containsKey(dateOnly)) {
+        dateCounts[dateOnly] = dateCounts[dateOnly]! + 1;
+      } else {
+        dateCounts[dateOnly] = 1; // 새로운 날짜 추가
+      }
+
+      print('dateCounts[dateOnly]: $dateCounts');
+      print("Date count keys: ${dateCounts.keys.map((date) => date.toString()).toList()}");
+
+    }
+  }
+
+  //활동 추가 함수
+  Future<void> _saveToFirestore(int index, DateTime time) async {
+  try {
+    await FirebaseFirestore.instance.collection('pet_activities').add({
+      'category': imageNames[index],
+      'title': imageNames[index],
+      'memo': '자세한 정보를 입력해주세요',
+      'date': DateFormat('yyyy-MM-dd').format(time),
+      'startTime': DateFormat('h:mm a').format(time),
+      'endTime': "09:30 PM",
+      'timestamp': Timestamp.fromDate(time),
+      'petName': selectedPetName ?? 'all_pets', // 선택된 반려동물이 있으면 해당 이름을 저장하고, 없으면 'all_pets'로 저장
+    });
+    _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
+  } catch (e) {
+    print('Error saving activity to Firestore: $e');
+  }
+}
+
+  //항목 삭제 함수
+  Future<void> _deleteItem(int index) async {
+  final id = clickedImages[index]['id'];
+
+  try {
+    await FirebaseFirestore.instance.collection('pet_activities').doc(id).delete();
+    print('Activity deleted from Firestore with ID: $id');
+    print('index: $index');
+    
+    setState(() {
+      clickedImages.removeAt(index);
+      if(_currentSelectedIndex == index)
+      {
+        print('_currentSelectedIndex: $_currentSelectedIndex');
+        if(clickedImages.isNotEmpty) {
+          int newIndex = clickedImages.length - 1 ;
+          _updateTextProvider(newIndex); //이전의 인덱스를 provider에 전달
+          
+          print('newIndex: $newIndex');
+          print('_updateTextProvider: $_updateTextProvider');
+
+        } else {
+          // 만약 clickedImages가 비어있다면, provider에 null을 전달
+          Provider.of<TextProvider>(context, listen: false).updateIndex(-1);
+        }
+      }
+    });
+  } catch (e) {
+    print('Error deleting activity from Firestore: $e');
+  }
+}
+
+  //페이지 수정 함수
+  Future<void> _navigateToPage(int clickedIndex, int index) async {
+  var data = {
+    'id': clickedImages[index]['id'],
+    'title': clickedImages[index]['title'],
+    'memo': clickedImages[index]['memo'],
+    'startTime': clickedImages[index]['startTime'] ?? '09:00',
+    'endTime': clickedImages[index]['endTime'] ?? '21:30',
+    'date': DateTime.now(),
+  };
+
+  bool? result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EditPage(
+        documentId: clickedImages[index]['id'],
+        initialCategory: imageNames[clickedIndex],
+        initialTitle: clickedImages[index]['title'],
+        initialMemo: clickedImages[index]['memo'],
+        initialStartTime: DateFormat('HH:mm').parse(data['startTime']),
+        initialEndTime: DateFormat('HH:mm').parse(data['endTime']),
+      ),
+    ),
+  );
+
+  print('Result from EditPage: $result'); // 반환값 확인
+
+  if (result == true) {
+    print("Fetching data from Firestore...");
+    await _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
+  }
+}
+
+  //수정, 삭제 슬라이더
+  Slidable buttonSlider(int index, int clickedIndex, String timeWithParentheses) {
+  return Slidable(
+    key: ValueKey(index),
+    endActionPane: ActionPane(
+      motion: const ScrollMotion(),
+      dismissible: DismissiblePane(onDismissed: () => _deleteItem(index)),
+      children: [
+        SlidableAction(
+          onPressed: (context) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  String startTimeStr = clickedImages[index]['startTime'] ?? '09:00 AM';
+                  String endTimeStr = clickedImages[index]['endTime'] ?? '09:30 PM';
+
+                  // 24시간 형식을 12시간 형식으로 변환
+                  DateTime startTime = DateFormat('HH:mm').parse(startTimeStr);
+                  DateTime endTime = DateFormat('HH:mm').parse(endTimeStr);
+
+                  return EditPage(
+                    documentId: clickedImages[index]['id'],
+                    initialCategory: imageNames[clickedIndex],
+                    initialTitle: clickedImages[index]['title'],
+                    initialMemo: clickedImages[index]['memo'],
+                    initialStartTime: startTime,
+                    initialEndTime: endTime,
+                  );
+                },
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(8.0),
+          backgroundColor: Colors.deepPurple.shade400,
+          foregroundColor: Colors.white,
+          icon: Icons.edit,
+          label: '수정',
+        ),
+        SizedBox(width: 5,),
+        SlidableAction(
+          onPressed: (context) => _deleteItem(index), // 삭제 버튼 클릭 시
+          borderRadius: BorderRadius.circular(8.0),
+          backgroundColor: const Color(0xFFFE4A49),
+          foregroundColor: Colors.white,
+          icon: Icons.delete,
+          label: '삭제',
+        ),
+      ],
+    ),
+    child: _buttonStyle(clickedIndex, timeWithParentheses, index),
+  );
 }
 }
   
