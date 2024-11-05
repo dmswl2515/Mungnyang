@@ -51,7 +51,7 @@ class _EditPageState extends State<EditPage> {
       'endTime': DateFormat('HH:mm').format(_endTime),
       'timestamp': _startTime.toUtc(),
     });
-    print('Document updated successfully'); // 로그 추가
+    print('Document updated successfully');
     Navigator.pop(context, true);
   } catch (e) {
     print('Error updating document: $e');
@@ -89,7 +89,7 @@ class _EditPageState extends State<EditPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("일정 등록",
+            Text("정보 수정",
                   style: HeadingStyle,),
             MyInputField(title: "제목", hint: "제목을 입력해주세요", controller: _titleController,), 
             MyInputField(title: "메모", hint: "메모를 입력해주세요", controller: _memoController,),
@@ -127,24 +127,8 @@ class _EditPageState extends State<EditPage> {
                       ), 
                     ),
                   ),
-                // Text('Start Time: ${DateFormat('h:mm a').format(_startTime)}'),
-                // Spacer(),
-                // ElevatedButton(
-                //   onPressed: () => _selectTime(_startTime, (time) => _startTime = time),
-                //   child: const Text('Pick Start Time'),
-                // ),
               ],
             ),
-            // Row(
-            //   children: [
-            //     Text('End Time: ${DateFormat('h:mm a').format(_endTime)}'),
-            //     Spacer(),
-            //     ElevatedButton(
-            //       onPressed: () => _selectTime(_endTime, (time) => _endTime = time),
-            //       child: const Text('Pick End Time'),
-            //     ),
-            //   ],
-            // ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,

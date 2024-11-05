@@ -49,8 +49,8 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  String? selectedPetId; //선택된 반려동물의 ID를 저장
-  String? selectedPetName;  //선택된 반려동물의 이름을 저장
+  //선택된 반려동물의 이름을 기본값으로 설정
+  String selectedPetName = "all_pets";  
 
   @override
   void initState() {
@@ -61,39 +61,49 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   //데이터 가져오기
   Future<void> _fetchFromFirestore() async {
   try {
+    //pet_activites 컬렉션에서 데이터를 가져오기 위해 query 객체 생성
     Query query = FirebaseFirestore.instance.collection('pet_activities');
-    
-    if (selectedPetId != null) {
-      query = query.where('petId', isEqualTo: selectedPetId);
+    print('query: $query');
+
+    // 선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
+    if (selectedPetName != null) {
+      print('Selected pet Name: $selectedPetName'); 
+      query = query.where('petName', isEqualTo: selectedPetName);
     }
     
+    //쿼리에 해당하는 문서를 snapshot으로 가져오기
     final snapshot = await query.get();
     final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final timestamp = data['timestamp'] as Timestamp;
+
+      // 'date' 필드를 DateTime 형식으로 변환 (Timestamp일 경우만 변환)
+      final date = data['date'] is Timestamp
+          ? (data['date'] as Timestamp).toDate()
+          : DateTime.now(); // date가 null일 경우 기본값으로 현재 시간 사용
+      
       return {
         'id': doc.id,
         'index': imageNames.indexOf(data['category']),
-        'time': timestamp.toDate(),  // Timestamp를 DateTime으로 변환
+        'date': data['date'],  // Timestamp를 DateTime으로 변환
         'title': data['title'],
         'memo': data['memo'] ?? '자세한 정보를 입력해주세요',
         'startTime': data['startTime'],
         'endTime': data['endTime'],
+        'petName': data['petName'],
+        'timestamp': data['timestamp'],
+        
       };
     }).toList();
 
-    print('Data loaded: $loadedData'); // 데이터 로드 확인
-
-    setState(() {
-      allClickedImages = loadedData;
-      _filterImagesByDate(_selectedDay ?? DateTime.now());
-      print('Data fetched successfully');
-    });
+    print('Data loaded from Firestore: $loadedData'); // 데이터 로드 확인
+    
+    allClickedImages = loadedData;
+    _filterImagesByDate(_selectedDay ?? DateTime.now());
+    print('Data fetched and setState called successfully');
   } catch (e) {
     print('Error fetching data from Firestore: $e');
   }
 }
-
 
   // 날짜 선택 시 호출되는 함수
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -110,36 +120,38 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   // 선택한 날짜에 해당하는 이미지만 필터링하는 함수
   void _filterImagesByDate(DateTime date) {
+  print('Filtering images for date: $date and petName: $selectedPetName');
+  print('All clicked images before filtering: $allClickedImages');
+
   setState(() {
     clickedImages = allClickedImages.where((image) {
-      final imageDate = image['time'] as DateTime;
+      final imageDate = DateTime.parse(image['date']); // 문자열을 DateTime으로 변환
       final bool isSameDate = imageDate.year == date.year &&
                               imageDate.month == date.month &&
                               imageDate.day == date.day;
 
-      if (selectedPetId != null) {
-        return isSameDate && image['petId'] == selectedPetId;
+      if (selectedPetName != null) {
+        return isSameDate && image['petName'] == selectedPetName;
       } else {
         return isSameDate;
       }
+
     }).toList();
     print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
   });
 }
 
-
-
   Future<void> _saveToFirestore(int index, DateTime time) async {
   try {
     await FirebaseFirestore.instance.collection('pet_activities').add({
       'category': imageNames[index],
-      'title': '제목을 입력해주세요',
+      'title': imageNames[index],
       'memo': '자세한 정보를 입력해주세요',
       'date': DateFormat('yyyy-MM-dd').format(time),
       'startTime': DateFormat('h:mm a').format(time),
       'endTime': "09:30 PM",
-      'timestamp': time.toUtc(),
-      'petId': selectedPetId ?? 'all_pets', // 선택된 반려동물이 있으면 해당 ID를 저장하고, 없으면 'all_pets'로 저장
+      'timestamp': Timestamp.fromDate(time),
+      'petName': selectedPetName ?? 'all_pets', // 선택된 반려동물이 있으면 해당 이름을 저장하고, 없으면 'all_pets'로 저장
     });
     _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
   } catch (e) {
@@ -161,11 +173,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     print('Error deleting activity from Firestore: $e');
   }
 }
-
-  void _editItem(int index) {
-    // 편집 로직을 추가할 수 있습니다.
-    print('Edit item at index $index');
-  }
 
   //페이지수정
   Future<void> _navigateToPage(int clickedIndex, int index) async {
@@ -195,7 +202,8 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   print('Result from EditPage: $result'); // 반환값 확인
 
   if (result == true) {
-    _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
+    print("Fetching data from Firestore...");
+    await _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
   }
 }
 
@@ -262,7 +270,6 @@ void _testFirestoreQuery() async {
                                   return GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        selectedPetId = doc.id; //선택된 반려동물의 ID를 저장
                                         selectedPetName = doc['name'];  //선택된 반려동물의 이름을 저장 
                                       });
                                       Navigator.pop(context);  // 선택 후 모달 닫기
@@ -383,7 +390,7 @@ void _testFirestoreQuery() async {
               itemBuilder: (context, index) {
                 // int clickedIndex = clickedIndices[index];
                 int clickedIndex = clickedImages[index]['index'];
-                DateTime clickedTime = clickedImages[index]['time'];
+                DateTime clickedTime = DateTime.parse(clickedImages[index]['date']);
                 String formattedTime = DateFormat('h:mm a').format(clickedTime); // 오전/오후 시간 형식(시간:분 오전/오후)
                 String timeWithParentheses = '($formattedTime)'; // 시간에 괄호 추가
 
@@ -423,7 +430,7 @@ void _testFirestoreQuery() async {
                     initialTitle: clickedImages[index]['title'],
                     initialMemo: clickedImages[index]['memo'],
                     initialStartTime: startTime,
-                  initialEndTime: endTime,
+                    initialEndTime: endTime,
                   );
                 },
               ),
