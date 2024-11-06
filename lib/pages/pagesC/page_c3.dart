@@ -49,6 +49,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   //캘린더의 마크표시
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<DateTime> fetchedDates = [];
   Map<DateTime, int> dateCounts = {};
 
   //선택된 반려동물의 이름을 기본값으로 설정
@@ -128,7 +129,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                                       },
                                       child: const Column(
                                         children: [
-                                          // 기본 이미지
+                                          // 모달창에서 기본 이미지
                                           CircleAvatar(
                                             backgroundImage: AssetImage('assets/images/부비.png'), // 기본 이미지
                                             radius: 30, // 프로필 이미지 크기
@@ -223,9 +224,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
               markerBuilder: (context, date, events) {
                 final localDate = DateTime(date.year, date.month, date.day);
                 print('localDate : $localDate');
-                print('dateCounts : $dateCounts');
+                print('fetchedDates : $fetchedDates');
 
-                if(dateCounts.containsKey(localDate)) {
+                if(fetchedDates.contains(localDate)) {
                   return Align(
                     alignment:Alignment.bottomCenter,
                     child: Container( //마커
@@ -405,7 +406,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   try {
     //pet_activites 컬렉션에서 데이터를 가져오기 위해 query 객체 생성
     Query query = FirebaseFirestore.instance.collection('pet_activities');
-    print('query: $query');
 
     // selectedPetName이 null이 아니고 'all_pets'가 아니면 해당 이름도 추가
     if (selectedPetName != null && selectedPetName != 'all_pets') {
@@ -444,7 +444,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     print('Data fetched and setState called successfully');
 
     //활동 데이터의 날짜만 추출
-    List<DateTime> fetchedDates = snapshot.docs.map((doc) {
+    fetchedDates = snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>?;
 
         print('펫이름에 따른 date : $data');
@@ -456,8 +456,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
         }
       }).where((date) => date != null).map((date) => date as DateTime).toList();
 
+      print('fetchedDates: $fetchedDates');
       // 날짜의 개수 세기
-      countDates(fetchedDates);
+      //countDates(fetchedDates);
   } catch (e) {
     print('Error fetching data from Firestore: $e');
   }
