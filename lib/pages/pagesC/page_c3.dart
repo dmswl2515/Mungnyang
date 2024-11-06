@@ -59,7 +59,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _fetchFromFirestore();      //활동 데이터 가져오기
+    _fetchFromFirestore(petNamesToFetch);      //활동 데이터 가져오기
     fetchPetActivitiesDates();  //활동 데이터 입력된 날짜 가져오기
   }
   
@@ -118,14 +118,18 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                                   var doc = snapshot.data!.docs[index];
                                   return GestureDetector(
                                     onTap: () {
+                                      String petName = doc['name'];
+
+                                      // 반려동물 선택 시 selectedPetName을 갱신하고 petNamesToFetch에 반영
                                       setState(() {
-                                        selectedPetName = doc['name'];  //선택된 반려동물의 이름을 저장 
+                                        selectedPetName = petName;   //선택된 반려동물의 이름을 저장 
+                                        petNamesToFetch = ['all_pets', petName];
                                         selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
                                       });
                                       Navigator.pop(context);  // 선택 후 모달 닫기
                                       
                                       // 선택된 반려동물의 활동 데이터를 다시 불러오기
-                                      _fetchFromFirestore();
+                                      _fetchFromFirestore(petNamesToFetch);
                                     },
                                     child: Column(
                                       children: [
@@ -197,30 +201,16 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                 print('dateCounts : $dateCounts');
 
                 if(dateCounts.containsKey(localDate)) {
-                  return Positioned(
-                    bottom: 1,
+                  return Align(
+                    alignment:Alignment.bottomCenter,
                     child: Container( //마커
-                      width: 15,
-                      height: 15,
-                      child : const Stack(
-                        alignment : Alignment.center,
-                        children: [
-                          Positioned(
-                            top: -1,
-                            child: Icon(
+                      margin: const EdgeInsets.only(top: 30),
+                      width: 30,
+                      height: 30,
+                      child : const Icon(
                               Icons.pets,
                               color : Colors.black54,
                               size: 13,
-                            ),
-                          ),
-                          // Text( 활동데이터 카운트 필요시 사용
-                          //   '${dateCounts[localDate]}',
-                          //   style: TextStyle(
-                          //     fontSize: 10,
-                          //     color: Colors.white,
-                          //   ),
-                          // ),
-                        ],
                       ),
                     ),
                   );
@@ -385,25 +375,30 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   return downloadUrl;
 }
 
+
+  //선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
+  List<String> petNamesToFetch = ['all_pets'];
+
   //반려동물 활동 전체 데이터 가져오기
-  Future<void> _fetchFromFirestore() async {
+  Future<void> _fetchFromFirestore(List<String> petNamesToFetch) async {
   try {
     //pet_activites 컬렉션에서 데이터를 가져오기 위해 query 객체 생성
     Query query = FirebaseFirestore.instance.collection('pet_activities');
     print('query: $query');
 
-    // 선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
-    if (selectedPetName != null) {
-      print('Selected pet Name: $selectedPetName'); 
-      query = query.where('petName', isEqualTo: selectedPetName);
+    // selectedPetName이 null이 아니고 'all_pets'가 아니면 해당 이름도 추가
+    if (selectedPetName != null && selectedPetName != 'all_pets') {
+      petNamesToFetch.add(selectedPetName);
     }
     
-    //쿼리에 해당하는 문서를 snapshot으로 가져오기
-    final snapshot = await query.get();
+    //'petName' 필드가 petNamesToFetch 리스트에 포함된 값들인 데이터를 가져오기
+    final snapshot = await query.where('petName', whereIn: petNamesToFetch).get();
+
     final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
+      print('data from firebase where petName: $data');
 
-      // 'date' 필드를 DateTime 형식으로 변환 (Timestamp일 경우만 변환)
+      //'date' 필드를 DateTime 형식으로 변환 (Timestamp일 경우만 변환)
       final date = data['date'] is Timestamp
           ? (data['date'] as Timestamp).toDate()
           : DateTime.now(); // date가 null일 경우 기본값으로 현재 시간 사용
@@ -447,7 +442,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   //선택한 날짜에 해당하는 이미지만 필터링하는 함수
   void _filterImagesByDate(DateTime date) {
-  print('Filtering images for date: $date and petName: $selectedPetName');
+  print('Filtering images for date: $date and petName: $petNamesToFetch');
   print('All clicked images before filtering: $allClickedImages');
 
   setState(() {
@@ -457,10 +452,11 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                               imageDate.month == date.month &&
                               imageDate.day == date.day;
 
-      if (selectedPetName != null) {
-        return isSameDate && image['petName'] == selectedPetName;
+      // selectedPetName이 'all_pets'일 경우 모든 데이터 표시
+      if (petNamesToFetch.contains('all_pets')) {
+        return isSameDate;  
       } else {
-        return isSameDate;
+        return petNamesToFetch.contains(image['petName']);  // 선택된 petName과 일치하는 데이터만 표시
       }
     }).toList();
     print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
@@ -528,7 +524,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
       'timestamp': Timestamp.fromDate(time),
       'petName': selectedPetName ?? 'all_pets', // 선택된 반려동물이 있으면 해당 이름을 저장하고, 없으면 'all_pets'로 저장
     });
-    _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
+    _fetchFromFirestore(petNamesToFetch); // Firestore에서 데이터를 다시 가져옴
   } catch (e) {
     print('Error saving activity to Firestore: $e');
   }
@@ -595,7 +591,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   if (result == true) {
     print("Fetching data from Firestore...");
-    await _fetchFromFirestore(); // Firestore에서 데이터를 다시 가져옴
+    await _fetchFromFirestore(petNamesToFetch); // Firestore에서 데이터를 다시 가져옴
   }
 }
 
