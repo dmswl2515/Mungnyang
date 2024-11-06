@@ -298,9 +298,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
               itemCount: clickedImages.length, // 클릭한 인덱스의 길이만큼 설정,
               itemBuilder: (context, index) {
                 int clickedIndex = clickedImages[index]['index'];
-                DateTime clickedTime = DateTime.parse(clickedImages[index]['date']);
-                String formattedTime = DateFormat('h:mm a').format(clickedTime); // 오전/오후 시간 형식(시간:분 오전/오후)
-                String timeWithParentheses = '($formattedTime)'; // 시간에 괄호 추가
+                String timeWithParentheses = '(${clickedImages[index]['startTime']})'; // 시간에 괄호 추가
 
                 return buttonSlider(index, clickedIndex, timeWithParentheses); 
               },
@@ -457,8 +455,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
       }).where((date) => date != null).map((date) => date as DateTime).toList();
 
       print('fetchedDates: $fetchedDates');
-      // 날짜의 개수 세기
-      //countDates(fetchedDates);
   } catch (e) {
     print('Error fetching data from Firestore: $e');
   }
