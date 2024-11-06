@@ -50,7 +50,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   //캘린더의 마크표시
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<DateTime> fetchedDates = [];
-  Map<DateTime, int> dateCounts = {};
 
   //선택된 반려동물의 이름을 기본값으로 설정
   String selectedPetName = "all_pets";  
@@ -299,7 +298,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
               itemBuilder: (context, index) {
                 int clickedIndex = clickedImages[index]['index'];
                 String timeWithParentheses = '(${clickedImages[index]['startTime']})'; // 시간에 괄호 추가
-
+                
                 return buttonSlider(index, clickedIndex, timeWithParentheses); 
               },
             ),
@@ -496,25 +495,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   });
 }
 
-  //날짜별 활동데이터 갯수 계산하는 함수
-  void countDates(List<DateTime> dates) {
-    for (var date in dates) {
-      // 날짜를 기준으로 일(day)만 비교하기 위해 날짜를 정리
-      final dateOnly = DateTime(date.year, date.month, date.day).toLocal();
-      print('dateOnly: $dateOnly');
-
-      // 이미 존재하는 날짜라면 카운트를 증가
-      if (dateCounts.containsKey(dateOnly)) {
-        dateCounts[dateOnly] = dateCounts[dateOnly]! + 1;
-      } else {
-        dateCounts[dateOnly] = 1; // 새로운 날짜 추가
-      }
-
-      print('dateCounts[dateOnly]: $dateCounts');
-      print("Date count keys: ${dateCounts.keys.map((date) => date.toString()).toList()}");
-
-    }
-  }
 
   //활동 추가 함수
   Future<void> _saveToFirestore(int index, DateTime time) async {
@@ -639,7 +619,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
           icon: Icons.edit,
           label: '수정',
         ),
-        SizedBox(width: 5,),
+        const SizedBox(width: 5,),
         SlidableAction(
           onPressed: (context) => _deleteItem(index), // 삭제 버튼 클릭 시
           borderRadius: BorderRadius.circular(8.0),
