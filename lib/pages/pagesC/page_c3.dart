@@ -113,35 +113,60 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                                   mainAxisSpacing: 10.0, // 아이템 사이의 세로 간격
                                   childAspectRatio: 1, // 아이템의 가로세로 비율
                                 ),
-                                itemCount: snapshot.data!.docs.length,
+                                itemCount: snapshot.data!.docs.length + 1,
                                 itemBuilder: (context, index) {
-                                  var doc = snapshot.data!.docs[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      String petName = doc['name'];
+                                  if(index == 0) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedPetName = 'all_pets';
+                                          petNamesToFetch = ['all_pets'];
+                                          selectedPetImage = null;
+                                        });
+                                        Navigator.pop(context); // 모달 닫기
+                                        _fetchFromFirestore(petNamesToFetch);
+                                      },
+                                      child: const Column(
+                                        children: [
+                                          // 기본 이미지
+                                          CircleAvatar(
+                                            backgroundImage: AssetImage('assets/images/부비.png'), // 기본 이미지
+                                            radius: 30, // 프로필 이미지 크기
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text('전체', style: TextStyle(fontSize: 16)),  // "전체" 텍스트
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    var doc = snapshot.data!.docs[index - 1];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        String petName = doc['name'];
 
-                                      // 반려동물 선택 시 selectedPetName을 갱신하고 petNamesToFetch에 반영
-                                      setState(() {
-                                        selectedPetName = petName;   //선택된 반려동물의 이름을 저장 
-                                        petNamesToFetch = ['all_pets', petName];
-                                        selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
-                                      });
-                                      Navigator.pop(context);  // 선택 후 모달 닫기
-                                      
-                                      // 선택된 반려동물의 활동 데이터를 다시 불러오기
-                                      _fetchFromFirestore(petNamesToFetch);
-                                    },
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(doc['image']),
-                                          radius: 30, // 프로필 이미지 크기
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(doc['name']),
-                                      ],
-                                    ),
-                                  );
+                                        // 반려동물 선택 시 selectedPetName을 갱신하고 petNamesToFetch에 반영
+                                        setState(() {
+                                          selectedPetName = petName;   //선택된 반려동물의 이름을 저장 
+                                          petNamesToFetch = ['all_pets', petName];
+                                          selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
+                                        });
+                                        Navigator.pop(context);  // 선택 후 모달 닫기
+                                        
+                                        // 선택된 반려동물의 활동 데이터를 다시 불러오기
+                                        _fetchFromFirestore(petNamesToFetch);
+                                      },
+                                      child: Column(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundImage: NetworkImage(doc['image']),
+                                            radius: 30, // 프로필 이미지 크기
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(doc['name']),
+                                        ],
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
                             ),
