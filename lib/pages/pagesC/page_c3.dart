@@ -53,14 +53,14 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
 
   //선택된 반려동물의 이름을 기본값으로 설정
   String selectedPetName = "all_pets";  
+  List<String> petNamesToFetch = ['all_pets'];
   // 선택된 반려동물의 이미지를 저장할 변수
   String? selectedPetImage;
 
   @override
   void initState() {
     super.initState();
-    _fetchFromFirestore(petNamesToFetch);      //활동 데이터 가져오기
-    fetchPetActivitiesDates();  //활동 데이터 입력된 날짜 가져오기
+    _fetchFromFirestore(petNamesToFetch);  //활동 데이터 가져오기
   }
   
   @override
@@ -400,10 +400,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
   return downloadUrl;
 }
 
-
-  //선택된 petName이 있을 경우 petName과 일치하는 데이터 가져오기
-  List<String> petNamesToFetch = ['all_pets'];
-
   //반려동물 활동 전체 데이터 가져오기
   Future<void> _fetchFromFirestore(List<String> petNamesToFetch) async {
   try {
@@ -419,6 +415,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     //'petName' 필드가 petNamesToFetch 리스트에 포함된 값들인 데이터를 가져오기
     final snapshot = await query.where('petName', whereIn: petNamesToFetch).get();
 
+    //활동 데이터의 모든 정보 추출
     final List<Map<String, dynamic>> loadedData = snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       print('data from firebase where petName: $data');
@@ -440,13 +437,27 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
         'timestamp': data['timestamp'],
       };
     }).toList();
-    
-
     print('Data loaded from Firestore: $loadedData'); // 데이터 로드 확인
     
     allClickedImages = loadedData;
     _filterImagesByDate(_selectedDay ?? DateTime.now());
     print('Data fetched and setState called successfully');
+
+    //활동 데이터의 날짜만 추출
+    List<DateTime> fetchedDates = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>?;
+
+        print('펫이름에 따른 date : $data');
+
+        if (data != null && data.containsKey('date')) {
+          return DateTime.parse(doc['date'] as String);
+        } else {
+          return null;
+        }
+      }).where((date) => date != null).map((date) => date as DateTime).toList();
+
+      // 날짜의 개수 세기
+      countDates(fetchedDates);
   } catch (e) {
     print('Error fetching data from Firestore: $e');
   }
@@ -487,34 +498,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     print('Clicked images filtered: $clickedImages'); // 필터링된 데이터 확인
   });
 }
-
-  //활동데이터가 입력되어 있는 날짜 가져오기
-  Future<void> fetchPetActivitiesDates() async {
-    try {
-      QuerySnapshot snapshot = await _firestore
-            .collection('pet_activities')
-            //.where("petName", isEqualTo: selectedPetName)
-            .orderBy("date")
-            .get();
-      print('snapshot: $snapshot');
-      
-      List<DateTime> fetchedDates = snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>?;
-
-        if (data != null && data.containsKey('date')) {
-          return DateTime.parse(doc['date'] as String);
-        } else {
-          return null;
-        }
-      }).where((date) => date != null).map((date) => date as DateTime).toList();
-      // 날짜의 개수 세기
-      countDates(fetchedDates);
-
-      setState(() {});
-    } catch (e) {
-      print("Error fetching pet activities dates: $e");
-    }
-  }
 
   //날짜별 활동데이터 갯수 계산하는 함수
   void countDates(List<DateTime> dates) {
