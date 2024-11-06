@@ -123,6 +123,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                                         selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
                                       });
                                       Navigator.pop(context);  // 선택 후 모달 닫기
+                                      
+                                      // 선택된 반려동물의 활동 데이터를 다시 불러오기
+                                      _fetchFromFirestore();
                                     },
                                     child: Column(
                                       children: [
@@ -278,7 +281,6 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                   true, //ListView, GridView, PageView와 같은 스크롤 가능한 위젯의 속성 중 하나, 해당 위젯의 크기를 자식 위젯의 크기에 맞춰 축소할지 여부를 결정,스크롤 가능한 위젯은 부모 위젯의 남은 공간을 모두 차지하려고 함.
               itemCount: clickedImages.length, // 클릭한 인덱스의 길이만큼 설정,
               itemBuilder: (context, index) {
-                // int clickedIndex = clickedIndices[index];
                 int clickedIndex = clickedImages[index]['index'];
                 DateTime clickedTime = DateTime.parse(clickedImages[index]['date']);
                 String formattedTime = DateFormat('h:mm a').format(clickedTime); // 오전/오후 시간 형식(시간:분 오전/오후)
@@ -470,8 +472,10 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     try {
       QuerySnapshot snapshot = await _firestore
             .collection('pet_activities')
+            //.where("petName", isEqualTo: selectedPetName)
             .orderBy("date")
             .get();
+      print('snapshot: $snapshot');
       
       List<DateTime> fetchedDates = snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>?;
