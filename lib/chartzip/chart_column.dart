@@ -13,11 +13,11 @@ class ChartColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return SfCartesianChart(
       plotAreaBackgroundColor: Colors.transparent,
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       borderColor: Colors.transparent,
       borderWidth: 0,
       plotAreaBorderWidth: 0,
-      primaryXAxis: CategoryAxis(
+      primaryXAxis: const CategoryAxis(
         axisLine: AxisLine(width: 0),
         edgeLabelPlacement: EdgeLabelPlacement.shift,
         majorGridLines: MajorGridLines(width: 0),
@@ -27,7 +27,7 @@ class ChartColumn extends StatelessWidget {
           fontFamily: 'Roboto',
           fontSize: 10,
       )),
-      primaryYAxis: NumericAxis(
+      primaryYAxis: const NumericAxis(
       majorGridLines: MajorGridLines(width: 1, color: bgColor),
       majorTickLines: MajorTickLines(width: 0),
       axisLine: AxisLine(width: 0),
@@ -38,7 +38,7 @@ class ChartColumn extends StatelessWidget {
       ),
     series: <CartesianSeries>[
       ColumnSeries<ChartColumnData, String>(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         dataSource: chartData,
         width: 0.4,
@@ -48,7 +48,7 @@ class ChartColumn extends StatelessWidget {
         xValueMapper: (ChartColumnData data, _) => data.x,
         yValueMapper: (ChartColumnData data, _) => data.y),
       ColumnSeries<ChartColumnData, String>(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         dataSource: chartData,
         width: 0.4,

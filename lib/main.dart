@@ -40,7 +40,7 @@ Future<void> main() async {
   Gemini.init(apiKey: GEMINI_API_KEY);
 
   await Firebase.initializeApp(options: firebaseOptions);
-  await DbHelper.initDb(); // 데이터베이스 초기화
+  await DbHelper.initDb(); //Database initialization
   await GetStorage.init();
 
   Get.put(UserController());

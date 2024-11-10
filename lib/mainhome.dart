@@ -41,12 +41,12 @@ class _MainhomeState extends State<Mainhome> {
     return GetMaterialApp(
       title: 'mainhome',
       theme: ThemeData(
-        // AppBar 색상
+        // AppBar color
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.deepPurple[200],
-          foregroundColor: Colors.black, // AppBar의 텍스트 색상
+          foregroundColor: Colors.black, // AppBar text's color
         ),
-        // 배경 색상
+        // background color
         scaffoldBackgroundColor: Color(0xFFD1C4E9),
       ),
       darkTheme: Themes.dark,
@@ -68,7 +68,7 @@ class _MainhomeState extends State<Mainhome> {
   }
 }
 
-//버튼 토글
+//button toggle
 bool toggle = true;
 
 class MyHomePage extends StatefulWidget {
@@ -88,7 +88,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-//Flutter에서 애니메이션을 구현할 때 사용하는 믹스인(버튼)
+//Mixin for implementing button animations in Flutter
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
 
@@ -96,10 +96,10 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, //TickerProvider를 지정
+        vsync: this, //TickerProvider
         duration: Duration(milliseconds: 350),
         reverseDuration:
-            Duration(milliseconds: 275) //애니메이션이 반대 방향으로 진행될 때의 지속 시간을 정의
+            Duration(milliseconds: 275) //Defines the duration of the animation when it plays in reverse
         );
 
     _animation = CurvedAnimation(
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 페이지가 다시 보일 때 상태를 초기화
+    //Reset the state when the page is reloaded
     if (ModalRoute.of(context)?.settings.name == '/') {
       setState(() {
         toggle = true;
@@ -135,21 +135,19 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  ////////////////////////버튼//////////////////////////////////////
+  //Floating button
   late AnimationController _controller;
   late Animation _animation;
-  bool toggle = true; //curve navigationbar 버튼의 상태를 관리하기 위한 변수
+  bool toggle = true; //Variable to manage the state of the curve navigation bar button
 
-  //버튼 여러개 설정 
   Alignment alignment1 = Alignment(0.0, 5.0);
   Alignment alignment2 = Alignment(0.0, 5.0);
   Alignment alignment3 = Alignment(0.0, 5.0);
   double size1 = 0.0;
   double size2 = 0.0;
   double size3 = 0.0;
-  ////////////////////////버튼//////////////////////////////////////
-
-  //CurvedNavigationBar사용할 때 페이지 상태 유지하기위해 사용//
+  
+  ////Used to maintain page state when using CurvedNavigationBar
   int _pageIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
 
@@ -162,9 +160,9 @@ class _MyHomePageState extends State<MyHomePage>
       const PageE1(),
     ];
   }
-  ///////////////CurbedNavigationBar///////////////////////////////
+  
 
-  // 페이지 이동 함수
+  //Page navigation function
   void _navigateToPage(Widget page) {
     Navigator.push(
       context,
@@ -193,9 +191,8 @@ class _MyHomePageState extends State<MyHomePage>
               index: _pageIndex,
               backgroundColor: Colors
                   .transparent, // Makes sure the background is not visible
-              // backgroundColor: Colors.deepPurple, // bar 배경색
-              color: Colors.deepPurple.shade200, // bar 색깔
-              animationDuration: Duration(milliseconds: 300), //bar 애니메이션 속도
+              color: Colors.deepPurple.shade200, // bar color
+              animationDuration: Duration(milliseconds: 300), //bar animation speed
               onTap: (index) {
                 setState(() {
                   _pageIndex = index;
@@ -205,8 +202,8 @@ class _MyHomePageState extends State<MyHomePage>
               },
               items: const [
                 Icon(
-                  Icons.home, //아이콘
-                  color: Colors.black87, // 아이콘 색깔
+                  Icons.home, 
+                  color: Colors.black87, 
                 ),
                 Icon(
                   Icons.bar_chart,
@@ -232,14 +229,13 @@ class _MyHomePageState extends State<MyHomePage>
           Stack(
             children: [
               AnimatedAlign(
-                //첫번째 추가 버튼
+                //First add button
                 duration: toggle
                     ? const Duration(milliseconds: 275)
                     : const Duration(milliseconds: 875),
                 alignment: alignment1,
                 curve: toggle ? Curves.easeIn : Curves.elasticInOut,
                 child: AnimatedContainer(
-                  //첫번째 추가 버튼
                   duration: const Duration(milliseconds: 275),
                   curve: toggle ? Curves.easeIn : Curves.easeOut,
                   height: size1,
@@ -249,14 +245,14 @@ class _MyHomePageState extends State<MyHomePage>
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
                     onTap: () => _navigateToPage(const PageC2(
-                      title: '반려동물 정보 입력(Page C-2)',
-                    )), // 버튼 클릭 시 Page1으로 이동
+                      title: '반려동물 정보 입력',
+                    )),
                     child: const Icon(Icons.pets, color: Colors.black87),
                   ),
                 ),
               ),
               AnimatedAlign(
-                //두번째 추가 버튼
+                //Second add button
                 duration: toggle
                     ? const Duration(milliseconds: 275)
                     : const Duration(milliseconds: 875),
@@ -271,22 +267,22 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.deepPurple.shade200,
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
-                    onTap: () => _navigateToPage(PageC3(
-                      title: '반려동물케어(Page C-3)',
-                    )), // 버튼 클릭 시 Page1으로 이동
-                    child: Icon(Icons.note_alt_outlined, color: Colors.black87),
+                    onTap: () => _navigateToPage(const PageC3(
+                      title: '반려동물케어',
+                    )),
+                    child: const Icon(Icons.note_alt_outlined, color: Colors.black87),
                   ),
                 ),
               ),
               AnimatedAlign(
-                //세번째 추가 버튼
+                //Third add button
                 duration: toggle
-                    ? Duration(milliseconds: 275)
-                    : Duration(milliseconds: 875),
+                    ? const Duration(milliseconds: 275)
+                    : const Duration(milliseconds: 875),
                 alignment: alignment3,
                 curve: toggle ? Curves.easeIn : Curves.elasticInOut,
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 275),
+                  duration: const Duration(milliseconds: 275),
                   curve: toggle ? Curves.easeIn : Curves.easeOut,
                   height: size3,
                   width: size3,
@@ -295,8 +291,8 @@ class _MyHomePageState extends State<MyHomePage>
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
                     onTap: () => _navigateToPage(HomePage(
-                      title: '반려동물 일정(Page C-4)',
-                    )), // 버튼 클릭 시 Page1으로 이동
+                      title: '반려동물 일정',
+                    )),
                     child: Icon(Icons.calendar_month, color: Colors.black87),
                   ),
                 ),
@@ -307,19 +303,19 @@ class _MyHomePageState extends State<MyHomePage>
                   child: Align(
                     alignment: Alignment.center,
                     child: Transform.rotate(
-                      //+버튼의 아이콘이 돌아감
+                      //The + button icon rotates
                       angle: _animation.value * pi * (3 / 4),
                       child: AnimatedContainer(
-                        duration: Duration(milliseconds: 375),
+                        duration: const Duration(milliseconds: 375),
                         curve:
-                            Curves.easeOut, //애니메이션이 진행되는 동안 속도가 점점 느려지게 하는 효과
-                        height: toggle ? 50.0 : 50.0, //버튼이 커졌다가 작아졌다하는 효과
+                            Curves.easeOut, // Effect that gradually slows down the animation during its progress //
+                        height: toggle ? 50.0 : 50.0, //Effect where the button grows and shrinks 
                         width: toggle ? 50.0 : 50.0,
                         child: Material(
                           color: Colors.deepPurple.shade200,
                           borderRadius: BorderRadius.circular(40.0),
                           child: IconButton(
-                            splashColor: Colors.black54, //버튼을 누르면 퍼지는 효과
+                            splashColor: Colors.black54, //Effect where the button expands when clicked
                             splashRadius: 20.0,
                             onPressed: () {
                               setState(() {
@@ -328,34 +324,32 @@ class _MyHomePageState extends State<MyHomePage>
                                   _controller.forward();
                                   Future.delayed(Duration(milliseconds: 10),
                                       () {
-                                    //아이콘이 튀어나오는 delayed되는 시간
+                                    //Delay time for the icon to pop out
                                     alignment1 =
-                                        Alignment(-0.28, 0.75); //아이콘 위치 조절
+                                        Alignment(-0.28, 0.75); //Adjust icon position
                                     size1 = 40.0;
                                   });
                                   Future.delayed(Duration(milliseconds: 100),
                                       () {
-                                    //아이콘이 튀어나오는 delayed되는 시간
                                     alignment2 = Alignment(0.0, 0.68);
                                     size2 = 40.0;
                                   });
                                   Future.delayed(Duration(milliseconds: 200),
                                       () {
-                                    //아이콘이 튀어나오는 delayed되는 시간
                                     alignment3 = Alignment(0.28, 0.75);
                                     size3 = 40.0;
                                   });
                                 } else {
                                   toggle = !toggle;
                                   _controller.reverse();
-                                  alignment1 = Alignment(0.0, 5.0);
-                                  alignment2 = Alignment(0.0, 5.0);
-                                  alignment3 = Alignment(0.0, 5.0);
+                                  alignment1 = const Alignment(0.0, 5.0);
+                                  alignment2 = const Alignment(0.0, 5.0);
+                                  alignment3 = const Alignment(0.0, 5.0);
                                   size1 = size2 = size3 = 0.0;
                                 }
                               });
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.add,
                               color: Colors.black87,
                             ),
@@ -370,7 +364,7 @@ class _MyHomePageState extends State<MyHomePage>
           ),
         ],
       ),
-      backgroundColor: Colors.deepPurple, //전체 배경색
+      backgroundColor: Colors.deepPurple, 
     );
   }
 }

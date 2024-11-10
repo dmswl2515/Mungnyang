@@ -30,7 +30,7 @@ class MyInputField extends StatelessWidget {
           Container(
             height: 52,
             margin: const EdgeInsets.only(top:8.0),
-            padding: EdgeInsets.only(left: 14),   //hint의 위치 이동
+            padding: EdgeInsets.only(left: 14),   //Hint position adjustment
             decoration: BoxDecoration(  
               border: Border.all(
                 color: Colors.grey,
@@ -50,13 +50,13 @@ class MyInputField extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: hint,
                       hintStyle: subTitleStyle,
-                      focusedBorder: UnderlineInputBorder(  //텍스트필드 밑에 밑줄
+                      focusedBorder: UnderlineInputBorder(  
                         borderSide: BorderSide(
                           color: context.theme.dialogBackgroundColor,
                           width: 0
                         )
                       ),
-                      enabledBorder: UnderlineInputBorder(  //입력 필드가 활성화(즉, 포커스가 맞춰져 있는 상태)되어 있을 때의 보더를 설정
+                      enabledBorder: UnderlineInputBorder( 
                         borderSide: BorderSide(
                           color: context.theme.scaffoldBackgroundColor,
                           width: 0,

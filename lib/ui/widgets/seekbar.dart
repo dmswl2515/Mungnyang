@@ -32,13 +32,6 @@ class SeekBar extends StatefulWidget {
 class _SeekbarState extends State<SeekBar> {
   double? _dragValue;
 
-  // Duration을 문자열로 포맷하는 함수
-  // String _formatDuration(Duration duration) {
-  //   final minutes = duration.inMinutes;
-  //   final seconds = duration.inSeconds % 60;
-  //   return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  // }
-
   String _formatDuration(Duration? duration) {
     if (duration == null) {
       return '__:__';
@@ -74,7 +67,7 @@ class _SeekbarState extends State<SeekBar> {
               overlayColor: Colors.white,
             ),
             child: Slider(
-              //음악구간 움직이는 바
+              //progress bar
               min: 0.0,
               max: widget.duration.inMilliseconds.toDouble(),
               value: min(

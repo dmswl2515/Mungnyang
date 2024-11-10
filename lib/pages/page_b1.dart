@@ -42,11 +42,14 @@ class _PageB1State extends State<PageB1> {
     for (var activity in activities) {
       if (counts.containsKey(activity.category)) {
         counts[activity.category] = counts[activity.category]! + 1;
+        print('counts1 : $counts');
       } else {
         counts[activity.category] = 1;
+        print('counts2 : $counts');
       }
     }
     return counts;
+    
   }
 
   @override
@@ -177,148 +180,148 @@ class _PageB1State extends State<PageB1> {
           ),
         ),
         SizedBox(height: 0),
-        // Padding(
-        //   padding: const EdgeInsets.all(defaultPadding),
-        //   child: Container(
-        //     padding: EdgeInsets.all(defaultPadding),
-        //     height: 370,
-        //     decoration: BoxDecoration(
-        //       color: primaryColor,
-        //       borderRadius: BorderRadius.all(Radius.circular(10))
-        //     ),
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         Row(
-        //           children: [
-        //             Text(
-        //               'TODO',
-        //               style: GoogleFonts.ubuntu(
-        //                 color: Colors.white,
-        //                 fontSize: 16,
-        //                 fontWeight: FontWeight.w600
-        //               ),
-        //             ),
-        //             Spacer(),
-        //             Padding(
-        //               padding: const EdgeInsets.only(right: 5),
-        //               child: Text(
-        //                 currentMonth,
-        //                 style: GoogleFonts.ubuntu(
-        //                   color: Colors.white,
-        //                   fontSize: 11,
-        //                   fontWeight: FontWeight.w400
-        //                 ),
-        //               ),
-        //             ),
-        //             Icon(Icons.arrow_drop_down, color: Colors.white54,)
-        //           ],
-        //         ),
-        //         SizedBox(height: defaultPadding),
-        //         SizedBox(
-        //           height: 200,
-        //           width: double.infinity,
-        //           child: DataTable(
-        //             headingTextStyle: TextStyle(color: Colors.white),
-        //             headingRowHeight: 25,
-        //             horizontalMargin: 0,
-        //             dataRowHeight: 35,
-        //             columnSpacing: 7,
-        //             columns: [
-        //               DataColumn(label: Text('할일')),
-        //               DataColumn(label: Text('15')),
-        //               DataColumn(label: Text('16')),
-        //               DataColumn(label: Text('17')),
-        //               DataColumn(label: Text('18')),
-        //               DataColumn(label: Text('19')),
-        //               DataColumn(label: Text('20')),
-        //               DataColumn(label: Text('21')),
-        //             ], 
-        //             rows: List.generate(
-        //               demoData.length, 
-        //               (index) => _dataRow(demoData[index])
-        //             ),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        // SizedBox(height: 0),
-        // Padding(
-        //   padding: const EdgeInsets.all(defaultPadding),
-        //   child: Container(
-        //     height: 300,
-        //     padding: EdgeInsets.all(defaultPadding),
-        //     decoration: BoxDecoration(
-        //       color: primaryColor,
-        //       borderRadius: BorderRadius.all(Radius.circular(10))
-        //     ),
-        //     child: Column(
-        //       children: [
-        //         Row(
-        //           children: [
-        //             Text(
-        //               'Financial Analytics',
-        //               style: GoogleFonts.ubuntu(
-        //                 color: Colors.white,
-        //                 fontSize: 16,
-        //                 fontWeight: FontWeight.w600
-        //               ),
-        //             ),
-        //             Spacer(),
-        //             Container(
-        //               height: 10,
-        //               width: 10,
-        //               decoration: BoxDecoration(
-        //                 shape: BoxShape.circle,
-        //                 color: secondaryColor,
-        //               ),
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.only(left: defaultPadding / 2),
-        //               child: Text(
-        //                 'Income',
-        //                 style: GoogleFonts.ubuntu(
-        //                   color: Colors.white,
-        //                   fontSize: 12,
-        //                   fontWeight: FontWeight.w400
-        //                 ),
-        //               ),
-        //             ),
-        //             SizedBox(width: defaultPadding * 2),
-        //             Container(
-        //               height: 10,
-        //               width: 10,
-        //               decoration: BoxDecoration(
-        //                 shape: BoxShape.circle,
-        //                 color: secondaryColor2,
-        //               ),
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.only(left: defaultPadding / 2),
-        //               child: Text(
-        //                 'Expenses',
-        //                 style: GoogleFonts.ubuntu(
-        //                   color: Colors.white,
-        //                   fontSize: 12,
-        //                   fontWeight: FontWeight.w400
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //         SizedBox(height: defaultPadding * 2),
-        //         Flexible(
-        //           child: Padding(
-        //             padding: const EdgeInsets.all(defaultPadding),
-        //             child: chartSpline(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
+        Padding(
+          padding: const EdgeInsets.all(defaultPadding),
+          child: Container(
+            padding: EdgeInsets.all(defaultPadding),
+            height: 370,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.all(Radius.circular(10))
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'TODO',
+                      style: GoogleFonts.ubuntu(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Text(
+                        currentMonth,
+                        style: GoogleFonts.ubuntu(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down, color: Colors.white54,)
+                  ],
+                ),
+                SizedBox(height: defaultPadding),
+                SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child: DataTable(
+                    headingTextStyle: TextStyle(color: Colors.white),
+                    headingRowHeight: 25,
+                    horizontalMargin: 0,
+                    dataRowHeight: 35,
+                    columnSpacing: 7,
+                    columns: [
+                      DataColumn(label: Text('할일')),
+                      DataColumn(label: Text('15')),
+                      DataColumn(label: Text('16')),
+                      DataColumn(label: Text('17')),
+                      DataColumn(label: Text('18')),
+                      DataColumn(label: Text('19')),
+                      DataColumn(label: Text('20')),
+                      DataColumn(label: Text('21')),
+                    ], 
+                    rows: List.generate(
+                      demoData.length, 
+                      (index) => _dataRow(demoData[index])
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 0),
+        Padding(
+          padding: const EdgeInsets.all(defaultPadding),
+          child: Container(
+            height: 300,
+            padding: EdgeInsets.all(defaultPadding),
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.all(Radius.circular(10))
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Financial Analytics',
+                      style: GoogleFonts.ubuntu(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                    Spacer(),
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: secondaryColor,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: defaultPadding / 2),
+                      child: Text(
+                        'Income',
+                        style: GoogleFonts.ubuntu(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: defaultPadding * 2),
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: secondaryColor2,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: defaultPadding / 2),
+                      child: Text(
+                        'Expenses',
+                        style: GoogleFonts.ubuntu(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: defaultPadding * 2),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(defaultPadding),
+                    child: chartSpline(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         SizedBox(width: defaultPadding * 2),
         SizedBox(height: 100),
       ],

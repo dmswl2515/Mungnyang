@@ -18,9 +18,8 @@ class _ChartRingState extends State<ChartRing> {
   @override
   void initState() {
     super.initState();
-    // 위젯 초기화 시 차트 데이터를 생성합니다.
+    //Generate chart data on widget initialization
     _chartData = _generateChartData(widget.activities);
-
     
   }
 
@@ -28,7 +27,7 @@ class _ChartRingState extends State<ChartRing> {
     final activityCounts = <String, int>{};
     final totalActivities = activities.length;
 
-    // 활동 카테고리별로 개수를 세어 activityCounts에 저장합니다.
+    //Count each activity category and store the results in activityCounts
     for (var activity in activities) {
       if (activityCounts.containsKey(activity.category)) {
         activityCounts[activity.category] = activityCounts[activity.category]! + 1;
@@ -37,14 +36,14 @@ class _ChartRingState extends State<ChartRing> {
       }
     }
 
-    // 차트 데이터 리스트를 생성합니다.
+    // Create a list for chart data.
     return activityCounts.entries.map((entry) {
       final percentage = (entry.value / totalActivities) * 100;
       return ChartData(
-        x: entry.key, // 카테고리 이름
-        y: entry.value.toDouble(), // 활동 개수
-        percentage: percentage, // 활동 비율
-        color: getColorForCategory(entry.key), // 카테고리 색상
+        x: entry.key, //Category Name
+        y: entry.value.toDouble(), //Activity value
+        percentage: percentage, //Activity ratio
+        color: getColorForCategory(entry.key), //Category color
       );
     }).toList();
   }
@@ -72,10 +71,9 @@ class _ChartRingState extends State<ChartRing> {
       );
     }).toList();
 
-    // 전체 퍼센테이지
+    //Total Percentage
     final totalPercentage = chartData.fold(0.0, (sum, item) => sum + item.percentage);
 
-    // 콘솔에 카테고리, 카운트, 퍼센테이지 출력
     for (var data in chartData) {
       print("Category: ${data.x}, Count: ${data.y.toStringAsFixed(0)}, Percentage: ${data.percentage.toStringAsFixed(1)}%");
     }
@@ -137,14 +135,14 @@ class _ChartRingState extends State<ChartRing> {
 
 class ChartData {
   ChartData({
-    required this.x,          // 카테고리 이름
-    required this.y,          // 활동 개수
-    required this.percentage, // 활동 비율
-    required this.color,      // 카테고리 색상
+    required this.x,          //Category name
+    required this.y,          //Activity value
+    required this.percentage, //Activity ratio
+    required this.color,      //Category color
   });
 
-  final String x;          // 카테고리 이름
-  final double y;         // 활동 개수
-  final double percentage; // 활동 비율
-  final Color color;      // 카테고리 색상
+  final String x;          
+  final double y;         
+  final double percentage; 
+  final Color color;      
 }

@@ -13,7 +13,7 @@ class chartSpline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCartesianChart(
-      onDataLabelRender: (DataLabelRenderArgs args) {       //차트 위에 값표시
+      onDataLabelRender: (DataLabelRenderArgs args) {       //Display values on top of the chart
         if(args.pointIndex == 1) {
           args.text = "\$2 500,00";
           args.textStyle = TextStyle(
@@ -24,18 +24,18 @@ class chartSpline extends StatelessWidget {
           args.text = '';
         }
       },
-      onMarkerRender: (MarkerRenderArgs args) {   //차트 위에 마커 표시
+      onMarkerRender: (MarkerRenderArgs args) {   //Display markers on top of the chart
         if(!(args.pointIndex == 1)) {
           args.markerHeight = 0;
           args.markerWidth = 0;
         }
       },
       plotAreaBackgroundColor: Colors.transparent,
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       borderColor: Colors.transparent,
       borderWidth: 0,
       plotAreaBorderWidth: 0,
-      primaryXAxis: CategoryAxis(
+      primaryXAxis: const CategoryAxis(
         axisLine: AxisLine(width: 0),
         labelPlacement: LabelPlacement.onTicks,
         edgeLabelPlacement: EdgeLabelPlacement.shift,
@@ -45,7 +45,7 @@ class chartSpline extends StatelessWidget {
           fontFamily: 'Roboto',
           fontSize: 14,
       )),
-      primaryYAxis: NumericAxis(
+      primaryYAxis: const NumericAxis(
       majorGridLines:
           MajorGridLines(width: 1, color: bgColor),
       majorTickLines: MajorTickLines(width: 0),
@@ -57,7 +57,7 @@ class chartSpline extends StatelessWidget {
     series: <CartesianSeries<dynamic, dynamic>>[
       SplineSeries<ChartSplineData, String>(
         color: secondaryColor2,
-        width: 4,   //보라색 그래프 선 두께
+        width: 4, 
         dataSource: chartData,
         xValueMapper: (ChartSplineData data, _) =>
             data.month,
@@ -65,7 +65,6 @@ class chartSpline extends StatelessWidget {
             data.amount,
       ),
       SplineAreaSeries(
-        //속 채우기
         dataSource: chartData,
         xValueMapper: (dynamic data, _) =>
             (data as ChartSplineData).month,
@@ -80,14 +79,12 @@ class chartSpline extends StatelessWidget {
             end: Alignment.bottomCenter),
       ),
       SplineSeries<ChartSplineData, String>(
-        markerSettings: MarkerSettings(
+        markerSettings: const MarkerSettings(
           isVisible: true,
           height: 10,
           width: 10
         ), 
-
-
-        dataLabelSettings: DataLabelSettings(   //차트 위에 값 속성설정
+        dataLabelSettings: const DataLabelSettings(   // Set value properties on top of the chart
           color: primaryColor,
           borderColor : secondaryColor,
           borderWidth: 2,
@@ -104,7 +101,6 @@ class chartSpline extends StatelessWidget {
             data.amount,
       ),
       SplineAreaSeries(
-        //속 채우기
         dataSource: chartData2,
         xValueMapper: (dynamic data, _) =>
             (data as ChartSplineData).month,

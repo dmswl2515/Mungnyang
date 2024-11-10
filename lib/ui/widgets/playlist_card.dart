@@ -17,7 +17,7 @@ class PlaylistCard extends StatelessWidget {
         Get.toNamed('/playlist', arguments: playlists);
       },
       child: Container(
-        //playlist 감싸는 컨테이너
+        //playlist wrapper
         height: 75,
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -56,7 +56,7 @@ class PlaylistCard extends StatelessWidget {
           IconButton(
             onPressed: () {},
             icon: Icon(
-              Icons.play_circle, //플레이 아이콘 버튼
+              Icons.play_circle, 
               color: Colors.white,
             ),
           ),

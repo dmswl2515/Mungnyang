@@ -38,7 +38,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor, // 다크모드 한 채로 일정추가 페이지로 이동하면 다크모드 그대로 적용됨
+      backgroundColor: context.theme.scaffoldBackgroundColor, // When navigating to the schedule addition page in dark mode, dark mode remains applied
       appBar: _appBar(context),
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
@@ -176,19 +176,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
         endTime: _endTime,
         remind: _selectedRemind,
         repeat: _selectedRepeat,
-        color: _selectedColor, // 선택된 색상
+        color: _selectedColor,
         isCompleted: 0,
       ),
     );
     print("my id is" + "$value");
   }
 
-  // 유효성 검증
+  //Validation
   _validatedDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-      // 데이터베이스
       _addTaskToDb();
-      Get.back(result: _selectedDate); // 선택된 날짜를 반환하며 페이지를 돌아가기
+      Get.back(result: _selectedDate);
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar(
         "필수사항입니다",
@@ -218,7 +217,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedColor = index; // 인덱스를 이용해서 선택여부를 표시
+                  _selectedColor = index; //Indicate selection status using index
                   print("$index");
                 });
               },
@@ -292,7 +291,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-  // 사용자 시간 가져오기
+  //Retrieve user's current time
   _getTimeFromUser({required bool isStartTime}) async {
     var pickedTime = await _showTimePicker();
     String _formatedTime = pickedTime.format(context);
