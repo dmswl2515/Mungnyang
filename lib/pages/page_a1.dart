@@ -49,10 +49,6 @@ class _PageA1State extends State<PageA1> {
 
   @override
   Widget build(BuildContext context) {
-    // User information for the drawer
-    
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[100],
@@ -64,7 +60,7 @@ class _PageA1State extends State<PageA1> {
       body: Stack(
         children: [
           AnimatedSwitcher(
-            //배경
+            //Background
             duration: Duration(milliseconds: 500),
             child: AnimatedContainer(
               duration: Duration(milliseconds: 500),
@@ -72,7 +68,7 @@ class _PageA1State extends State<PageA1> {
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                //배경색
+                //Background Color
                 isSwitch == false ? HexColor('E0144C') : HexColor('2D033B'),
                 isSwitch == false ? HexColor('FFE15D') : HexColor('810CAB')
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),

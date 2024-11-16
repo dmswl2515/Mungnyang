@@ -21,7 +21,7 @@ class PageC3 extends StatefulWidget {
 }
 
 class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
-  //이미지 밑에 표시되는 이름
+  
   final List<String> imageNames = [
     '식사/간식',
     '배변',
@@ -35,7 +35,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     '심박수',
   ];
 
-  //현재 선택된 인덱스를 저장할 변수
+  //selectd image index
   int? _currentSelectedIndex;
 
   //클릭한 이미지의 정보를 저장하는 리스트
@@ -72,130 +72,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
         title: const Text('반려동물케어'),
         backgroundColor: Colors.deepPurple[200],
         actions: [
-          IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                backgroundColor: Colors.deepPurple[200],
-                context: context, 
-                builder: (BuildContext context) {
-                  return FutureBuilder<QuerySnapshot>(
-                    future: FirebaseFirestore.instance.collection('pets').get(),
-                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return Center(child: Text('반려동물 정보가 없습니다.'));
-                      }
-
-                      return Container(
-                        padding: EdgeInsets.all(20),
-                        height: 400,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '반려동물 선택',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text('케어할 반려동물을 선택해주세요'),
-                            const SizedBox(height: 20),
-                            Expanded(
-                              child: GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3, // 한 줄에 3개의 항목을 배치
-                                  crossAxisSpacing: 10.0, // 아이템 사이의 가로 간격
-                                  mainAxisSpacing: 10.0, // 아이템 사이의 세로 간격
-                                  childAspectRatio: 1, // 아이템의 가로세로 비율
-                                ),
-                                itemCount: snapshot.data!.docs.length + 1,
-                                itemBuilder: (context, index) {
-                                  if(index == 0) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedPetName = 'all_pets';
-                                          petNamesToFetch = ['all_pets'];
-                                          selectedPetImage = null;
-                                        });
-                                        Navigator.pop(context); // 모달 닫기
-                                        _fetchFromFirestore(petNamesToFetch);
-                                      },
-                                      child: const Column(
-                                        children: [
-                                          // 모달창에서 기본 이미지
-                                          CircleAvatar(
-                                            backgroundImage: AssetImage('assets/images/부비.png'), // 기본 이미지
-                                            radius: 30, // 프로필 이미지 크기
-                                          ),
-                                          SizedBox(height: 5),
-                                          Text('전체', style: TextStyle(fontSize: 16)),  // "전체" 텍스트
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    var doc = snapshot.data!.docs[index - 1];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        String petName = doc['name'];
-
-                                        // 반려동물 선택 시 selectedPetName을 갱신하고 petNamesToFetch에 반영
-                                        setState(() {
-                                          selectedPetName = petName;   //선택된 반려동물의 이름을 저장 
-                                          petNamesToFetch = ['all_pets', petName];
-                                          selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
-                                        });
-                                        Navigator.pop(context);  // 선택 후 모달 닫기
-                                        
-                                        // 선택된 반려동물의 활동 데이터를 다시 불러오기
-                                        _fetchFromFirestore(petNamesToFetch);
-                                      },
-                                      child: Column(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundImage: NetworkImage(doc['image']),
-                                            radius: 30, // 프로필 이미지 크기
-                                          ),
-                                          const SizedBox(height: 5),
-                                          Text(doc['name']),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  }, 
-                                  child: const Text('취소'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                }
-              );
-            },
-            icon: CircleAvatar(
-              backgroundImage: selectedPetImage != null
-                ? NetworkImage(selectedPetImage!)
-                : const AssetImage('assets/images/부비.png'), 
-              radius: 20,
-            ),
-          ),
+          ProfileButton(context),
         ],
       ),
       body: Column(
@@ -304,6 +181,132 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  IconButton ProfileButton(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        showModalBottomSheet(
+          backgroundColor: Colors.deepPurple[200],
+          context: context, 
+          builder: (BuildContext context) {
+            return FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance.collection('pets').get(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('반려동물 정보가 없습니다.'));
+                }
+                return Container(
+                  padding: EdgeInsets.all(20),
+                  height: 400,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '반려동물 선택',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text('케어할 반려동물을 선택해주세요'),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3, // 한 줄에 3개의 항목을 배치
+                            crossAxisSpacing: 10.0, // 아이템 사이의 가로 간격
+                            mainAxisSpacing: 10.0, // 아이템 사이의 세로 간격
+                            childAspectRatio: 1, // 아이템의 가로세로 비율
+                          ),
+                          itemCount: snapshot.data!.docs.length + 1,
+                          itemBuilder: (context, index) {
+                            if(index == 0) {
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPetName = 'all_pets';
+                                    petNamesToFetch = ['all_pets'];
+                                    selectedPetImage = null;
+                                  });
+                                  Navigator.pop(context); // 모달 닫기
+                                  _fetchFromFirestore(petNamesToFetch);
+                                },
+                                child: const Column(
+                                  children: [
+                                    // 모달창에서 기본 이미지
+                                    CircleAvatar(
+                                      backgroundImage: AssetImage('assets/images/부비.png'), // 기본 이미지
+                                      radius: 30, // 프로필 이미지 크기
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text('전체', style: TextStyle(fontSize: 16)),  // "전체" 텍스트
+                                  ],
+                                ),
+                              );
+                            } else {
+                              var doc = snapshot.data!.docs[index - 1];
+                              return GestureDetector(
+                                onTap: () {
+                                  String petName = doc['name'];
+
+                                  // 반려동물 선택 시 selectedPetName을 갱신하고 petNamesToFetch에 반영
+                                  setState(() {
+                                    selectedPetName = petName;   //선택된 반려동물의 이름을 저장 
+                                    petNamesToFetch = ['all_pets', petName];
+                                    selectedPetImage = doc['image']; //선택된 반려동물 이미지 저장
+                                  });
+                                  Navigator.pop(context);  // 선택 후 모달 닫기
+                                  
+                                  // 선택된 반려동물의 활동 데이터를 다시 불러오기
+                                  _fetchFromFirestore(petNamesToFetch);
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(doc['image']),
+                                      radius: 30, // 프로필 이미지 크기
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(doc['name']),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }, 
+                            child: const Text('취소'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        );
+      },
+      icon: CircleAvatar(
+        backgroundImage: selectedPetImage != null
+          ? NetworkImage(selectedPetImage!)
+          : const AssetImage('assets/images/부비.png'), 
+        radius: 20,
       ),
     );
   }
