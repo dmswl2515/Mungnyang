@@ -19,19 +19,6 @@ class WashPage extends StatelessWidget {
   var notifyHelper;
   final TaskController _taskController = Get.put(TaskController()); // TaskController 인스턴스 생성
 
-
-
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   // notifyHelper = NotifyHelper();
-  //   // notifyHelper.initializeNotification();
-  //   // //notifyHelper.requestIOSPermissions();
-  //   // notifyHelper._requestIOSPermissions();
-  // }
-
   @override
   Widget build(BuildContext context) {
     _taskController.getTasks(); // 데이터 로딩

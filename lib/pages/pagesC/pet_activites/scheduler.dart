@@ -12,8 +12,8 @@ import 'package:totalexam/ui/widgets/add_task_bar.dart';
 import 'package:totalexam/ui/widgets/button.dart';
 
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key, required String title});
+class Scheduler extends StatelessWidget {
+  Scheduler({super.key, required String title});
 
 // GetX의 상태 관리를 위한 TaskController 인스턴스를 찾습니다.
   // final TaskController _taskController = Get.find();

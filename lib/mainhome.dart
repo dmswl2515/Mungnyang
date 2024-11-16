@@ -290,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.deepPurple.shade200,
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
-                    onTap: () => _navigateToPage(HomePage(
+                    onTap: () => _navigateToPage(Scheduler(
                       title: '반려동물 일정',
                     )),
                     child: Icon(Icons.calendar_month, color: Colors.black87),

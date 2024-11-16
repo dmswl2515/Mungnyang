@@ -14,6 +14,7 @@ import '../reference/text_provider.dart';
 import 'map_page.dart';
 import 'pagesC/Liten_c3_2.dart';
 import 'pagesC/game_c3_2.dart';
+import 'pagesC/pet_activites/scheduler.dart';
 
 class PageA1 extends StatefulWidget {
 
@@ -59,7 +60,7 @@ class _PageA1State extends State<PageA1> {
                   style: TextStyle(fontWeight: FontWeight.bold),),
         centerTitle : true,
       ),
-      drawer: AppDrawer(), // AppDrawer 사용
+      drawer: AppDrawer(), 
       body: Stack(
         children: [
           AnimatedSwitcher(
@@ -78,7 +79,7 @@ class _PageA1State extends State<PageA1> {
               child: Stack(
                 children: [
                   AnimatedPositioned(
-                    //해 애니메이션
+                    //Animation for Sun
                     duration: const Duration(milliseconds: 800),
                     bottom: isSwitch == false ? 5 : -500,
                     child: SizedBox(
@@ -95,7 +96,7 @@ class _PageA1State extends State<PageA1> {
                           Align(
                               alignment: Alignment.center,
                               child: Container(
-                                //해 정중앙
+                                //Center of Sun
                                 height: 130,
                                 width: 130,
                                 decoration: const BoxDecoration(
@@ -107,7 +108,7 @@ class _PageA1State extends State<PageA1> {
                     ),
                   ),
                   Positioned(
-                    //바닥 배경
+                    //Background of floor
                     bottom: 0,
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.8,
@@ -116,7 +117,7 @@ class _PageA1State extends State<PageA1> {
                         image: DecorationImage(
                           image: AssetImage('assets/images/mountain.png'),
                           fit:
-                              BoxFit.fitHeight, // 이미지의 세로를 컨테이너에 맞추고 비율을 유지합니다.
+                              BoxFit.fitHeight, // 이미지의 세로를 컨테이너에 맞추고 비율을 유지
                         ),
                       ),
                     ),
@@ -126,8 +127,8 @@ class _PageA1State extends State<PageA1> {
                       padding: EdgeInsets.only(top: 320, left: 20),
                       child: Image.asset(
                         'assets/images/부비.png',
-                        height: 230, // 적절한 높이를 설정하세요
-                        width: 230, // 적절한 너비를 설정하세요
+                        height: 230, 
+                        width: 230, 
                       ),
                     ),
                   ),
@@ -136,7 +137,7 @@ class _PageA1State extends State<PageA1> {
             ),
           ),
           Positioned.fill(
-              //realtime으로 실시간 정보 공유
+              //realtime
               child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
             child: AnimatedContainer(
@@ -149,7 +150,6 @@ class _PageA1State extends State<PageA1> {
             ),
           )),
           Center(
-            //위치 고정 필요
             child: Consumer<TextProvider>(
               builder: (context, textProvider, child) {
                 return Padding(
@@ -163,7 +163,7 @@ class _PageA1State extends State<PageA1> {
             ),
           ),
           Positioned(
-              //dark and night 스위치
+              //dark and night 
               top: 5,
               right: 16,
               child: SizedBox(
@@ -192,8 +192,8 @@ class _PageA1State extends State<PageA1> {
     return SpeedDial(
       icon: Icons.fast_forward_rounded,
       direction: SpeedDialDirection.right,
-      // animatedIcon: AnimatedIcons.menu_close, //메뉴
-      backgroundColor: const Color.fromARGB(0, 0, 0, 0), //메뉴 배경색
+      // animatedIcon: AnimatedIcons.menu_close, 
+      backgroundColor: const Color.fromARGB(0, 0, 0, 0), 
       elevation: 0,
       // overlayColor: Colors.black, //버튼을 클릭했을 때의 배경색(이게 없으면 투명한 하얀색이 됌)
       overlayOpacity: 0.4, //버튼 클릭시 배경색의 투명도 지정
@@ -206,7 +206,6 @@ class _PageA1State extends State<PageA1> {
       renderOverlay: true,
       children: [
         SpeedDialChild(
-          //식사
           child: Icon(
             FontAwesomeIcons.cutlery,
             size: 25,
@@ -225,7 +224,6 @@ class _PageA1State extends State<PageA1> {
           },
         ),
         SpeedDialChild(
-          //산책
           child: Icon(
             Icons.directions_walk_sharp,
             size: 28,
@@ -238,10 +236,11 @@ class _PageA1State extends State<PageA1> {
           ),
           onTap: () {
             // MapPage로 이동
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MapPage()),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => MapPage()),
+            // );
+            _showAlertDialog(context);
           },
         ),
         SpeedDialChild(
@@ -270,7 +269,7 @@ class _PageA1State extends State<PageA1> {
           ),
           onTap: () async {
             int? selectedNumber = await showDialog<int>(
-              //모달
+              //Modal
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
@@ -349,10 +348,9 @@ class _PageA1State extends State<PageA1> {
             style: TextStyle(fontSize: 12),
           ),
           onTap: () {
-            // MapPage로 이동
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MapPage()),
+              MaterialPageRoute(builder: (context) => Scheduler(title: '반려동물 일정',)),
             );
           },
         ),
@@ -361,7 +359,6 @@ class _PageA1State extends State<PageA1> {
   }
 
   void _showOptionsDialog(BuildContext context) async {
-    // 사용자가 선택할 수 있는 다이얼로그
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -417,6 +414,46 @@ class _PageA1State extends State<PageA1> {
                 ],
               ),
             ),
+          ],
+        );
+      },
+    );
+  }
+  
+  void _showAlertDialog(BuildContext context) async {
+    await showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.deepPurple[100],
+          title: Center(
+            child: Text('서비스 개발 중')
+          ),
+          content: Text(
+            '열심히 개발 중이니 조금만 기다려주세요.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15),
+          ),
+          actions: [
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.yellow),
+                      minimumSize: WidgetStateProperty.all(Size(80, 50)),
+                      textStyle: WidgetStateProperty.all(
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }, 
+                    child: Text('확인하기'),
+                  ),
+                ],
+              ),
+            )
           ],
         );
       },

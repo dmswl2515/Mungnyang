@@ -69,7 +69,7 @@ class _PageB1State extends State<PageB1> {
           padding: const EdgeInsets.only(top: 15, right: 15, left: 15, bottom: 0),
           child: Container(
             padding: EdgeInsets.all(defaultPadding),
-            height: 300, // 높이를 적절히 조절
+            height: 300, 
             decoration: BoxDecoration(
               color: primaryColor,
               borderRadius: BorderRadius.only(

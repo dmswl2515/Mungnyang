@@ -33,7 +33,6 @@ class ChartSpline3 extends StatelessWidget {
             data.amount,
       ),
       SplineAreaSeries(
-        //속 채우기
         dataSource: chartData,
         xValueMapper: (dynamic data, _) =>
             (data as ChartSplineData).month,
