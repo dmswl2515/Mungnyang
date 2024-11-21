@@ -34,7 +34,7 @@ class PetActivity {
 }
 
 
-Future<List<PetActivity>> fetchActivities() async {
+Future<List<PetActivity>> fetchActivities(petNamesToFetch) async {
   final firestore = FirebaseFirestore.instance;
   final now = DateTime.now();
   final startOfWeek = now.subtract(Duration(days: now.weekday % 7)); // 이번 주 일요일
@@ -43,6 +43,7 @@ Future<List<PetActivity>> fetchActivities() async {
   final snapshot = await firestore.collection('pet_activities')
       .where('timestamp', isGreaterThanOrEqualTo: startOfWeek.toUtc())
       .where('timestamp', isLessThanOrEqualTo: startOfMonth.add(Duration(days: 31)).toUtc())
+      .where('petId', whereIn: petNamesToFetch)
       .get();
 
   return snapshot.docs.map((doc) => PetActivity.fromFirestore(doc)).toList();
