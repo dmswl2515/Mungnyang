@@ -6,6 +6,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:totalexam/reference/text_provider.dart';
+import 'package:totalexam/ui/widgets/profile_button.dart'; 
+
+
 
 class CircularTimer extends StatefulWidget {
   final int number; // 타이머의 총 지속 시간 (초 단위)
@@ -24,6 +27,12 @@ class _CircularTimerState extends State<CircularTimer> {
   bool isIconBlue = false; // 아이콘 색상 상태를 관리하는 변수
   bool isTimerFinished = false; // 타이머 종료 여부를 관리하는 변수
   int resultIndex = 7; // 정상 호흡을 쟀다는 인덱스
+
+  //선택된 반려동물의 이름을 기본값으로 설정
+  String selectedPetName = 'all_pets';
+  // 선택된 반려동물의 이미지를 저장할 변수
+  String? selectedPetImage;
+
 
   @override
   void initState() {
@@ -118,6 +127,7 @@ class _CircularTimerState extends State<CircularTimer> {
         'startTime': DateFormat('h:mm a').format(time),
         'endTime': "09:30 PM",
         'timestamp': time.toUtc(),
+        'petName': selectedPetName,
       });
 
       // 결과를 TextProvider에 업데이트
@@ -141,6 +151,17 @@ class _CircularTimerState extends State<CircularTimer> {
       appBar: AppBar(
         title: Text('타이머'),
         centerTitle: true,
+        actions: [
+          ProfileButton(
+            selectedPetImage: selectedPetImage,
+            onPetSelected: (petName, petImage) {
+              setState(() {
+                selectedPetName = petName;
+                selectedPetImage = petImage;
+              });
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(

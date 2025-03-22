@@ -481,7 +481,7 @@ DataRow _dataRow(Data data) {
 Color getColorForCategory(String category) {
   switch (category) {
     case '식사/간식':
-      return Colors.orange;
+      return secondaryColor;
     case '병원':
       return Color(0xFFB39DDB);
     case '산책':
