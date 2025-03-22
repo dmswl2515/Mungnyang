@@ -36,7 +36,7 @@ class _PageB1State extends State<PageB1> {
     final snapshot = await firestore.collection('pet_activities')
         .where('timestamp', isGreaterThanOrEqualTo: startOfWeek.toUtc())
         .where('timestamp', isLessThanOrEqualTo: startOfMonth.add(Duration(days: 31)).toUtc())
-        .where('petId', whereIn: petNamesToFetch)
+        .where('petName', whereIn: petNamesToFetch)
         .get();
 
     return snapshot.docs.map((doc) => PetActivity.fromFirestore(doc)).toList();

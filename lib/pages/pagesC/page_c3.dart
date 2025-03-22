@@ -558,7 +558,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
     'memo': clickedImages[index]['memo'],
     'startTime': clickedImages[index]['startTime'] ?? '09:00',
     'endTime': clickedImages[index]['endTime'] ?? '21:30',
-    'date': DateTime.now(),
+    'date': (clickedImages[index]['date'] is DateTime)
+            ? clickedImages[index]['date']
+            : DateTime.parse(clickedImages[index]['date']),
   };
 
   bool? result = await Navigator.push(
@@ -571,6 +573,7 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
         initialMemo: clickedImages[index]['memo'],
         initialStartTime: DateFormat('HH:mm').parse(data['startTime']),
         initialEndTime: DateFormat('HH:mm').parse(data['endTime']),
+        initialDate: data['date'],
       ),
     ),
   );
@@ -611,6 +614,9 @@ class _PageC3State extends State<PageC3> with SingleTickerProviderStateMixin {
                     initialMemo: clickedImages[index]['memo'],
                     initialStartTime: startTime,
                     initialEndTime: endTime,
+                    initialDate: (clickedImages[index]['date'] is DateTime)
+                        ? clickedImages[index]['date']
+                        : DateTime.parse(clickedImages[index]['date']),
                   );
                 },
               ),

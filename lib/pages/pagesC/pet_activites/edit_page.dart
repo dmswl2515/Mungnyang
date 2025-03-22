@@ -12,6 +12,7 @@ class EditPage extends StatefulWidget {
   final String initialMemo;
   final DateTime initialStartTime;
   final DateTime initialEndTime;
+  final DateTime initialDate;
 
   const EditPage({
     Key? key,
@@ -21,6 +22,7 @@ class EditPage extends StatefulWidget {
     required this.initialMemo,
     required this.initialStartTime,
     required this.initialEndTime,
+    required this.initialDate,
   }) : super(key: key);
 
   @override
@@ -44,12 +46,20 @@ class _EditPageState extends State<EditPage> {
 
   Future<void> _updateDocument() async {
   try {
+    final fixedTimestamp = DateTime(
+          widget.initialDate.year,
+          widget.initialDate.month,
+          widget.initialDate.day,
+          _startTime.hour,
+          _startTime.minute,
+        ).toUtc();
+
     await FirebaseFirestore.instance.collection('pet_activities').doc(widget.documentId).update({
       'title': _titleController.text,
       'memo': _memoController.text,
       'startTime': DateFormat('HH:mm').format(_startTime),
       'endTime': DateFormat('HH:mm').format(_endTime),
-      'timestamp': _startTime.toUtc(),
+      'timestamp': fixedTimestamp
     });
     print('Document updated successfully');
     Navigator.pop(context, true);
