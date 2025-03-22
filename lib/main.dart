@@ -11,18 +11,18 @@ import 'package:totalexam/mainhome.dart';
 import 'package:totalexam/pages/page_d1.dart';
 import 'package:totalexam/screens/login_screen.dart';
 import 'package:totalexam/screens/splash_screen.dart';
+import 'package:totalexam/reference/Config/index.dart';
 
 import 'db/db_helper.dart';
 import 'reference/constants.dart';
-import 'reference/Config.dart';
 import 'reference/text_provider.dart';
 
 FirebaseOptions get firebaseOptions => const FirebaseOptions(
-      appId: FIREBASE_APP_ID,
-      apiKey: FIREBASE_API_KEY,
-      projectId: FIREBASE_PROJECT_ID,
-      messagingSenderId: FIREBASE_MESSAGING_SENDER_ID, 
-      storageBucket: FIREBASE_STORAGE_BUCKET,
+      appId: Config.FIREBASE_APP_ID,
+      apiKey: Config.FIREBASE_API_KEY,
+      projectId: Config.FIREBASE_PROJECT_ID,
+      messagingSenderId: Config.FIREBASE_MESSAGING_SENDER_ID, 
+      storageBucket: Config.FIREBASE_STORAGE_BUCKET,
     );
 
 Future<void> main() async {
@@ -37,7 +37,7 @@ Future<void> main() async {
   
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  Gemini.init(apiKey: GEMINI_API_KEY);
+  Gemini.init(apiKey: Config.GEMINI_API_KEY);
 
   await Firebase.initializeApp(options: firebaseOptions);
   await DbHelper.initDb(); //Database initialization
