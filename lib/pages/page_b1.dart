@@ -26,6 +26,9 @@ class _PageB1State extends State<PageB1> {
   List<String> petNamesToFetch = ['all_pets'];
   String? selectedPetImage;
 
+  // 보고서 디폴트 기간
+  String selectedFormat = 'Week';
+
   Future<List<PetActivity>> fetchActivities(List<String> petNamesToFetch) async {
 
     final firestore = FirebaseFirestore.instance;
@@ -64,7 +67,7 @@ class _PageB1State extends State<PageB1> {
       return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('보고서'),
+        title: const Text(''),
         actions: [
           ProfileButton(context),
         ],
@@ -110,7 +113,18 @@ class _PageB1State extends State<PageB1> {
                             ),
                           ),
                         ),
-                        Icon(Icons.arrow_drop_down, color: Colors.white54,)
+                        PopupMenuButton<String>(
+                          icon: Icon(Icons.arrow_drop_down, color: Colors.white54,),
+                          onSelected: (value) {
+                            setState(() {
+                              selectedFormat = value;
+                            });
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(value: 'Week', child: Text('Week')),
+                            const PopupMenuItem(value: 'Month', child: Text('Month')),
+                          ],
+                        )
                       ],
                     ),
                     Expanded(

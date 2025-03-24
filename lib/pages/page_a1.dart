@@ -83,12 +83,12 @@ class _PageA1State extends State<PageA1> {
                       width: 400,
                       child: Stack(
                         children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Lottie.network(
-                                'https://assets5.lottiefiles.com/packages/lf20_xcvaucib.json',
-                                fit: BoxFit.contain),
-                          ),
+                          // Align(
+                          //   alignment: Alignment.center,
+                          //   child: Lottie.network(
+                          //       'https://assets5.lottiefiles.com/packages/lf20_xcvaucib.json',
+                          //       fit: BoxFit.contain),
+                          // ),
                           Align(
                               alignment: Alignment.center,
                               child: Container(
@@ -123,7 +123,7 @@ class _PageA1State extends State<PageA1> {
                       padding: EdgeInsets.only(top: 320, left: 20),
                       child: Image.asset(
                         'assets/images/부비.png',
-                        height: 230, 
+                        height: 110, 
                         width: 230, 
                       ),
                     ),
