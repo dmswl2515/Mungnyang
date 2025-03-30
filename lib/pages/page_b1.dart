@@ -22,9 +22,13 @@ class PageB1 extends StatefulWidget {
 }
 
 class _PageB1State extends State<PageB1> {
+  // 프로필 설정
   String selectedPetName = "all_pets";  
   List<String> petNamesToFetch = ['all_pets'];
   String? selectedPetImage;
+
+  // 
+  final GlobalKey _dropdownKey = GlobalKey();
 
   // 보고서 디폴트 기간
   String selectedFormat = 'Week';
@@ -102,28 +106,75 @@ class _PageB1State extends State<PageB1> {
                           ),
                         ),
                         const Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 5),
-                          child: Text(
-                            'Week',
-                            style: GoogleFonts.ubuntu(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400
-                            ),
-                          ),
-                        ),
-                        PopupMenuButton<String>(
-                          icon: Icon(Icons.arrow_drop_down, color: Colors.white54,),
-                          onSelected: (value) {
-                            setState(() {
-                              selectedFormat = value;
+                        InkWell(
+                          key: _dropdownKey,
+                          onTap: () {
+                            WidgetsBinding.instance.addPostFrameCallback((_) async {
+                              final RenderBox button = _dropdownKey.currentContext!.findRenderObject() as RenderBox;
+                              final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                              final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
+                              final Offset bottomRight = button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay);
+
+                              final RelativeRect position = RelativeRect.fromRect(
+                                Rect.fromPoints(
+                                  // button.localToGlobal(Offset.zero, ancestor: overlay),
+                                  // button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                                  offset.translate(0, button.size.height),
+                                  bottomRight.translate(0, button.size.height),
+                                ),
+                                Offset.zero & overlay.size,
+                              );
+
+                              final selected = await showMenu<String>(
+                                context: context,
+                                position: position,
+                                items: ['Week', 'Month'].map((value) {
+                                  return PopupMenuItem<String>(
+                                    value: value,
+                                    padding: EdgeInsets.zero,
+                                    height: 20,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: selectedFormat == value ? Colors.grey.shade300 : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),                                    
+                                      padding: EdgeInsets.symmetric(vertical: 6),
+                                      child: Text(
+                                        value,
+                                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                constraints: const BoxConstraints(
+                                  minWidth: 65,
+                                  maxWidth: 100,
+                                ),
+                              );
+
+                              if (selected != null) {
+                                setState(() {
+                                  selectedFormat = selected;
+                                });
+                              }
                             });
                           },
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(value: 'Week', child: Text('Week')),
-                            const PopupMenuItem(value: 'Month', child: Text('Month')),
-                          ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                selectedFormat,
+                                style: GoogleFonts.ubuntu(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(Icons.arrow_drop_down, color: Colors.white54, size: 20),
+                            ],
+                          ),
                         )
                       ],
                     ),
