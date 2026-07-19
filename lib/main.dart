@@ -14,6 +14,7 @@ import 'package:totalexam/screens/login_screen.dart';
 import 'package:totalexam/screens/splash_screen.dart';
 import 'package:totalexam/reference/Config/index.dart' as app_config;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'db/db_helper.dart';
 import 'reference/constants.dart';
@@ -74,6 +75,15 @@ class MyApp extends StatelessWidget {
       //home: LoginScreen(),
       home: Mainhome(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+      ],
+      locale: const Locale('ko', 'KR'),
     );
   }
 }
