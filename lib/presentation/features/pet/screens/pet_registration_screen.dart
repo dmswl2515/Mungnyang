@@ -16,6 +16,7 @@ class PetRegistrationsScreen extends ConsumerStatefulWidget {
 class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> {
   final PageController _pageController = PageController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
   final int _totalSteps = 7;
   int _currentStep = 0;
   String _breedSearch = '';
@@ -28,6 +29,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
+    _weightController.dispose();
     super.dispose();
   }
 
@@ -49,6 +51,9 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
       );
       setState(() => _currentStep--);
     }
+  }
+
+  void _submitForm() {//TODO: 등록 로직
   }
 
   @override
@@ -114,34 +119,82 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   Widget _buildStepHeader({required String title, required String subtitle}) {
     return Column(
       children: [
-        Image.asset('assets/images/부비.png', width: 80, height: 80),
-        const SizedBox(height: 16),
+        Image.asset('assets/images/부비.png', width: 70, height: 70),
+        const SizedBox(height: 8),
         Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        Text(subtitle, style: const TextStyle(color: Colors.black45)),
-        const SizedBox(height: 28),
+        const SizedBox(height: 8),
+        Text(subtitle, style: const TextStyle(color: greyColor)),
+        const SizedBox(height: 18),
       ],
     );
   }
 
   Widget _buildNextButton() {
+    final isLastStep = _currentStep == _totalSteps - 1;
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 2, 24, 14),
       child: SizedBox(
         width: double.infinity,
         height: 56,
         child: ElevatedButton(
-          onPressed: _nextPage,
+          onPressed: isLastStep ? _submitForm : _nextPage,
           style: ElevatedButton.styleFrom(
             backgroundColor: pointColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          child: const Text(
-            '다음',
-            style: TextStyle(fontSize: 18, color: Colors.white),
+          child: Text(isLastStep ? '등록' : '다음',
+            style: const TextStyle(fontSize: 18, color: Colors.white),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailsRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+      child: Row(
+        children: [
+          Text(label, style: TextStyle(color: greyColor, fontSize: 14, fontWeight: FontWeight.bold)),
+          Spacer(),
+          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPetCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  '${_form.breed} 정보',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+            ),
+            const Divider(),
+
+            _buildDetailsRow('품종', _form.breed ?? '-'),
+            _buildDetailsRow('이름', _form.name ?? '-'),
+            _buildDetailsRow('생일', _form.birthdate != null
+              ? '${_form.birthdate!.year}.${_form.birthdate!.month}.${_form.birthdate!.day}'
+              : '-'),
+            _buildDetailsRow('성별', _form.gender == Gender.male ? '수컷' : '암컷'),
+            _buildDetailsRow('중성화', _form.neuter == NeuterStatus.done ? '완료' : '미완료'),
+            _buildDetailsRow('몸무게', _form.weight != null ? '${_form.weight} kg' : '-'),
+          ],
         ),
       ),
     );
@@ -218,7 +271,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
         ],
       ),
     );
-  }
+  } // 반려동물 종류
   Widget _buildStep2() {
     // 품종 데이터 보관용
     final breeds = (_form.animal == AnimalType.dog ? dogBreeds : catBreeds)
@@ -286,7 +339,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
         ],
       ),
     );
-  }
+  } // 품종
   Widget _buildStep3() {
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -322,7 +375,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
         ],
       ),
     );
-  }
+  } // 이름
   Widget _buildStep4() {
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -371,7 +424,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
         ]
       )
     );
-  }
+  } // 생일
   Widget _buildStep5() {
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -497,9 +550,60 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
         ],
       ),
     );
+  } // 성별 및 중성화 여부
+  Widget _buildStep6() {
+     return Padding(
+       padding: const EdgeInsets.all(24),
+       child: Column(
+         children: [
+           _buildStepHeader(
+               title: '몸무게를 입력해주세요',
+               subtitle: '건강그래프로 몸무게를 관리해요.'
+           ),
+           Padding(
+             padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+             child: TextField(
+               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+               controller: _weightController,
+               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+               onChanged: (value) => _form.weight = double.tryParse(value),
+               textAlign: TextAlign.center,
+               decoration: InputDecoration(
+                 suffixText: 'kg',
+                 hintText: "0.0",
+                 hintStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                 contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                 filled: true,
+                 fillColor: Colors.white,
+                 enabledBorder: OutlineInputBorder(
+                   borderRadius: BorderRadius.circular(30),
+                   borderSide: const BorderSide(color: pointColor, width: 2),
+                 ),
+                 focusedBorder: OutlineInputBorder(
+                   borderRadius: BorderRadius.circular(30),
+                   borderSide: const BorderSide(color: pointColor, width: 2),
+                 )
+               ),
+             ),
+           )
+         ],
+       ),
+     );
+  } // 몸무게
+  Widget _buildStep7() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          _buildStepHeader(
+              title: '${_form.name ?? '친구'} 등록 완료',
+              subtitle: '이제부터 ${_form.name ?? '친구'}의 하루를 기록해요.'
+          ),
+          _buildPetCard()
+        ],
+      ),
+    );
   }
-  Widget _buildStep6() => const Center(child: Text('Step 6: 몸무게'));
-  Widget _buildStep7() => const Center(child: Text('Step 7: 등록'));
 
 }
 
