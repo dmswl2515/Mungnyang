@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:totalexam/domain/entities/pet.dart';
 import 'package:totalexam/domain/entities/pet_create_form.dart';
 import 'package:totalexam/data/repositories/mock/mock_breed_data.dart';
+import 'package:totalexam/presentation/features/pet/controllers/pet_controller.dart';
 
 class PetRegistrationsScreen extends ConsumerStatefulWidget {
   const PetRegistrationsScreen({super.key});
@@ -20,6 +21,7 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   final int _totalSteps = 7;
   int _currentStep = 0;
   String _breedSearch = '';
+  bool _isLoading = false;
   DateTime? _selectedDate;
 
   // 입력 데이터 보관용
@@ -53,7 +55,27 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
     }
   }
 
-  void _submitForm() {//TODO: 등록 로직
+  void _submitForm() async {
+    setState(() => _isLoading = true);
+    final pet = Pet(
+      id: DateTime.now().toString(),
+      name: _form.name ?? '',
+      animal: _form.animal ?? AnimalType.dog,
+      breed: _form.breed,
+      birthdate: _form.birthdate ?? DateTime.now(),
+      weight: _form.weight ?? 0.0,
+      gender: _form.gender ?? Gender.male,
+      neuter: _form.neuter ?? NeuterStatus.yet,
+    );
+
+    try {
+      await ref.read(petProvider.notifier).addPet(pet);
+      Navigator.pop(context);
+    } catch (e) {
+      // 에러 스넥바 등
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -69,11 +91,11 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
             )
           : null,
       ),
+      bottomNavigationBar: _buildNextButton(),
       body: Column(
         children: [
           // 상단 진행 표시(발바닥 아이콘)
           _buildProgressIndicator(),
-
           // 페이지 내용
           Expanded(
             child: PageView (
@@ -90,8 +112,6 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
               ],
             ),
           ),
-          // 다음 버튼
-          _buildNextButton(),
         ],
       ),
     );
@@ -132,21 +152,23 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   Widget _buildNextButton() {
     final isLastStep = _currentStep == _totalSteps - 1;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 2, 24, 14),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: ElevatedButton(
-          onPressed: isLastStep ? _submitForm : _nextPage,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: pointColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 60),
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: isLastStep ? _submitForm : _nextPage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: pointColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
-          ),
-          child: Text(isLastStep ? '등록' : '다음',
-            style: const TextStyle(fontSize: 18, color: Colors.white),
+            child: Text(isLastStep ? '등록' : '다음',
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
           ),
         ),
       ),
