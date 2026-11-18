@@ -6,7 +6,7 @@ class Pet {
   final String id;
   final String name;
   final AnimalType animal;
-  final String? breed;
+  final String breedId;
   final String? registrationNumber;
   final DateTime birthdate;
   final double weight;
@@ -18,7 +18,7 @@ class Pet {
     required this.id,
     required this.name,
     required this.animal,
-    this.breed,
+    required this.breedId,
     this.registrationNumber,
     required this.birthdate,
     required this.weight,

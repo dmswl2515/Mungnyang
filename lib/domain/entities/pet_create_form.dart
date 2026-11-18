@@ -2,7 +2,7 @@ import 'package:totalexam/domain/entities/pet.dart';
 
 class PetCreateForm {
   AnimalType? animal;
-  String? breed;
+  String? breedId;
   String? name;
   DateTime? birthdate;
   double? weight;

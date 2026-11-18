@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import '../../../../domain/entities/pet.dart';
 import '../../../../domain/repositories/pet_repository.dart';
+import '../../../../domain/entities/breed.dart';
 
 class MockPetRepository implements PetRepository {
   final List<Pet> _pets = [
@@ -8,7 +9,7 @@ class MockPetRepository implements PetRepository {
       id: '1',
       name: '쿠키',
       animal: AnimalType.dog,
-      breed: '골든 리트리버',
+      breedId: 'dog-001',
       registrationNumber: '410181234567890',
       birthdate: DateTime(2020, 3, 15),
       weight: 4.2,
@@ -19,7 +20,7 @@ class MockPetRepository implements PetRepository {
       id: '2',
       name: '나비',
       animal: AnimalType.cat,
-      breed: '러시안 블루',
+      breedId: 'cat-003',
       registrationNumber: null,
       birthdate: DateTime(2021, 7, 22),
       weight: 3.8,
@@ -30,7 +31,7 @@ class MockPetRepository implements PetRepository {
       id: '3',
       name: '몽이',
       animal: AnimalType.dog,
-      breed: null,
+      breedId: kUnknownDogBreedId,
       registrationNumber: '410189876543210',
       birthdate: DateTime(2022, 11, 5),
       weight: 6.1,

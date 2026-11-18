@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:totalexam/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:totalexam/domain/entities/breed.dart';
 import 'package:totalexam/domain/entities/pet.dart';
 import 'package:totalexam/domain/entities/pet_create_form.dart';
-import 'package:totalexam/data/repositories/mock/mock_breed_data.dart';
+import 'package:totalexam/presentation/features/pet/controllers/breed_controller.dart';
 import 'package:totalexam/presentation/features/pet/controllers/pet_controller.dart';
 
 class PetRegistrationsScreen extends ConsumerStatefulWidget {
@@ -56,12 +57,15 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   }
 
   void _submitForm() async {
+    final animal = _form.animal;
+    if (animal == null) return;
+
     setState(() => _isLoading = true);
     final pet = Pet(
       id: DateTime.now().toString(),
       name: _form.name ?? '',
-      animal: _form.animal ?? AnimalType.dog,
-      breed: _form.breed,
+      animal: animal,
+      breedId: _form.breedId ?? unknownBreedIdOf(animal),
       birthdate: _form.birthdate ?? DateTime.now(),
       weight: _form.weight ?? 0.0,
       gender: _form.gender ?? Gender.male,
@@ -151,6 +155,8 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
 
   Widget _buildNextButton() {
     final isLastStep = _currentStep == _totalSteps - 1;
+    // 동물을 선택해야 다음 단계로 진행 가능
+    final canProceed = _currentStep != 0 || _form.animal != null;
 
     return SafeArea(
       child: Padding(
@@ -159,9 +165,10 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: isLastStep ? _submitForm : _nextPage,
+            onPressed: isLastStep ? _submitForm : (canProceed ? _nextPage : null),
             style: ElevatedButton.styleFrom(
               backgroundColor: pointColor,
+              disabledBackgroundColor: Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -189,6 +196,12 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
   }
 
   Widget _buildPetCard() {
+    final animal = _form.animal;
+    final breeds = animal == null
+        ? <Breed>[]
+        : ref.watch(breedsProvider(animal)).valueOrNull ?? [];
+    final breedName = breedNameOf(breeds, _form.breedId);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
       child: Container(
@@ -202,13 +215,13 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                  '${_form.breed} 정보',
+                  '$breedName 정보',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
             ),
             const Divider(),
 
-            _buildDetailsRow('품종', _form.breed ?? '-'),
+            _buildDetailsRow('품종', breedName),
             _buildDetailsRow('이름', _form.name ?? '-'),
             _buildDetailsRow('생일', _form.birthdate != null
               ? '${_form.birthdate!.year}.${_form.birthdate!.month}.${_form.birthdate!.day}'
@@ -236,7 +249,10 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
           // 강아지 카드
           GestureDetector(
             onTap: () {
-              setState(() => _form.animal = AnimalType.dog);
+              setState(() {
+                if (_form.animal != AnimalType.dog) _form.breedId = null;
+                _form.animal = AnimalType.dog;
+              });
               _nextPage();
             },
             child: Container(
@@ -265,7 +281,10 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
           const SizedBox(height: 16),
           GestureDetector(
             onTap: () {
-              setState(() => _form.animal = AnimalType.cat);
+              setState(() {
+                if (_form.animal != AnimalType.cat) _form.breedId = null;
+                _form.animal = AnimalType.cat;
+              });
               _nextPage();
             },
             child: Container(
@@ -295,10 +314,11 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
     );
   } // 반려동물 종류
   Widget _buildStep2() {
-    // 품종 데이터 보관용
-    final breeds = (_form.animal == AnimalType.dog ? dogBreeds : catBreeds)
-      .where((b) => b.contains(_breedSearch))
-      .toList();
+    // 동물 선택 전에는 목록을 요청하지 않음 (1단계에서 다음 버튼이 막혀 있음)
+    final animal = _form.animal;
+    if (animal == null) return const SizedBox.shrink();
+
+    final breedsAsync = ref.watch(breedsProvider(animal));
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -328,32 +348,42 @@ class _PetRegistrationScreenState extends ConsumerState<PetRegistrationsScreen> 
           ),
           const SizedBox(height:12),
           Expanded(
-            child: ListView.separated(
-              itemCount: breeds.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final breed = breeds[index];
-                final isSelected = _form.breed == breed;
+            child: breedsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => const Center(child: Text('품종 목록을 불러오지 못했어요')),
+              data: (allBreeds) {
+                final breeds = allBreeds
+                    .where((b) => b.name.contains(_breedSearch))
+                    .toList();
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() => _form.breed = breed);
-                    _nextPage();
-                  },
-                    child: Container(
-                    padding: const EdgeInsets.all(16),
+                return ListView.separated(
+                  itemCount: breeds.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final breed = breeds[index];
+                    final isSelected = _form.breedId == breed.id;
 
-                    // 선택 시 테두리 강조
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected ? pointColor : Colors.transparent,
-                        width: 2,
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() => _form.breedId = breed.id);
+                        _nextPage();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+
+                        // 선택 시 테두리 강조
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? pointColor : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(breed.name, style: TextStyle(fontSize: 16)),
                       ),
-                    ),
-                    child: Text(breed, style: TextStyle(fontSize: 16)),
-                  ),
+                    );
+                  },
                 );
               },
             ),
