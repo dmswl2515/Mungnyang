@@ -1,16 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:totalexam/controllers/user_controller.dart';
 import 'package:totalexam/mainhome.dart';
-import 'package:totalexam/pages/page_a1.dart';
-import 'package:totalexam/reference/drawer.dart';
 import 'package:totalexam/screens/registration_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
-import 'package:http/http.dart' as http;
 
 
 class LoginScreen extends StatefulWidget {
@@ -144,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     passwordField,
                     const SizedBox(height: 20),
                     loginButton,
-                    getNaverLoginButton(),
                     const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -210,70 +202,4 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<void> signInWithNaver() async {
-    await FlutterNaverLogin.logIn().then((value) async {
-      NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
-      var accessToken = res.accessToken;
-      fetchNaverUserDetail(accessToken);
-
-      print("accesToken $accessToken");
-    });
-  }
-
-  Future<void> fetchNaverUserDetail(String accessToken) async {
-    final response = await http.get(
-      Uri.parse('https://openapi.naver.com/v1/nid/me'),
-      headers: {
-        HttpHeaders.authorizationHeader: 'Bearer $accessToken',
-      },
-    );
-    final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
-    String name = responseJson['response']['name'];
-    String email = responseJson['response']['email'];
-    String profileImage = responseJson['response']['profile_image'];
-
-    UserController userController = Get.find();
-    userController.setUser(name, email, profileImage);
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const Mainhome(),
-      ),
-    );
-  }
-
-  Widget getNaverLoginButton() {
-    return InkWell(
-      onTap: () {
-        signInWithNaver();
-      },
-      child: Card(
-        margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-        elevation: 2,
-        child: Ink.image(
-          image: const AssetImage('assets/login/naver.png'),
-          fit: BoxFit.cover,
-          height: 80,
-          width: double.infinity,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
-              color: Colors.transparent,
-            ),
-            child: null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> logout() async {
-    try {
-      await FlutterNaverLogin.logOutAndDeleteToken();
-      print('로그아웃 성공');
-    } catch (e) {
-      print('로그아웃 실패: $e');
-    }
-  }
 }

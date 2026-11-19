@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as legacy_provider;
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:totalexam/controllers/user_controller.dart';
@@ -11,18 +12,20 @@ import 'package:totalexam/mainhome.dart';
 import 'package:totalexam/pages/page_d1.dart';
 import 'package:totalexam/screens/login_screen.dart';
 import 'package:totalexam/screens/splash_screen.dart';
-import 'package:totalexam/reference/Config/index.dart';
+import 'package:totalexam/reference/Config/index.dart' as app_config;
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'db/db_helper.dart';
 import 'reference/constants.dart';
 import 'reference/text_provider.dart';
 
 FirebaseOptions get firebaseOptions => const FirebaseOptions(
-      appId: Config.FIREBASE_APP_ID,
-      apiKey: Config.FIREBASE_API_KEY,
-      projectId: Config.FIREBASE_PROJECT_ID,
-      messagingSenderId: Config.FIREBASE_MESSAGING_SENDER_ID, 
-      storageBucket: Config.FIREBASE_STORAGE_BUCKET,
+      appId: app_config.Config.FIREBASE_APP_ID,
+      apiKey: app_config.Config.FIREBASE_API_KEY,
+      projectId: app_config.Config.FIREBASE_PROJECT_ID,
+      messagingSenderId: app_config.Config.FIREBASE_MESSAGING_SENDER_ID,
+      storageBucket: app_config.Config.FIREBASE_STORAGE_BUCKET,
     );
 
 Future<void> main() async {
@@ -37,7 +40,7 @@ Future<void> main() async {
   
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  Gemini.init(apiKey: Config.GEMINI_API_KEY);
+  Gemini.init(apiKey: app_config.Config.GEMINI_API_KEY);
 
   await Firebase.initializeApp(options: firebaseOptions);
   await DbHelper.initDb(); //Database initialization
@@ -46,9 +49,11 @@ Future<void> main() async {
   Get.put(UserController());
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => TextProvider(), 
-      child: MyApp(),
+    ProviderScope (
+      child: legacy_provider.ChangeNotifierProvider(
+        create: (context) => TextProvider(),
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -63,10 +68,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        textTheme: GoogleFonts.juaTextTheme(
+          ThemeData.light().textTheme,
+        ),
       ),
       //home: LoginScreen(),
       home: Mainhome(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+      ],
+      locale: const Locale('ko', 'KR'),
     );
   }
 }

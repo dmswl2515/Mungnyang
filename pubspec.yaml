@@ -10,6 +10,8 @@ environment:
 
 
 dependencies:
+  flutter_localizations:
+    sdk: flutter
   flutter:
     sdk: flutter
   #firebase  
@@ -26,8 +28,8 @@ dependencies:
   board_datetime_picker: ^2.0.0
   curved_navigation_bar: ^1.0.6
   table_calendar: ^3.1.2
-  intl: ^0.19.0
-  flutter_slidable: ^3.1.1
+  intl: ^0.20.0
+  flutter_slidable: ^4.0.3
   lottie: ^3.1.2
   hexcolor: ^3.0.1
   day_night_switcher: ^0.2.0+1
@@ -50,11 +52,10 @@ dependencies:
   provider: ^6.1.2
   #chart
   flutter_svg: ^2.0.10+1
-  syncfusion_flutter_charts: ^26.2.4
+  syncfusion_flutter_charts: ^29.1.0
   material_segmented_control: ^5.0.1
   fdottedline_nullsafety: ^2.0.1
   flutter_neumorphic: ^3.2.0
-  getwidget: ^4.0.0
   percent_indicator: ^4.2.3
   flutter_lints: ^3.0.0
   #chatbot
@@ -62,17 +63,15 @@ dependencies:
   dash_chat_2: ^0.0.21
   #SNS LOGIN
   google_sign_in: ^6.2.1
-  flutter_naver_login: ^1.8.0
   url_launcher: ^6.3.0
-  uni_links: ^0.5.1
   #music play
   rxdart: ^0.28.0
   just_audio: ^0.9.39
   #launcher icons
   flutter_launcher_icons: ^0.13.1
-
-
   cupertino_icons: ^1.0.6
+  flutter_riverpod: ^2.5.1
+
 
 dev_dependencies:
   flutter_test:
@@ -111,4 +110,6 @@ flutter:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
-  #이거시찐이다  
+
+dependency_overrides:
+  intl: 0.20.2

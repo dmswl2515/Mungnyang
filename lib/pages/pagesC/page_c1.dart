@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:totalexam/presentation/features/pet/screens/pet_registration_screen.dart';
 import '../../reference/drawer.dart';
-import 'page_c2(반려동물정보입력).dart';
 import 'page_c3.dart';
 import 'page_c4.dart';
 
@@ -34,7 +34,7 @@ class _PageC1State extends State<PageC1> {
                   context,
                   // MaterialPageRoute(builder: (context) => const PageA2()),
                   PageRouteBuilder(
-                    pageBuilder: (context, anim1, anim2) => const PageC2(title: '반려동물 정보 입력(Page C-2)',),
+                    pageBuilder: (context, anim1, anim2) => const PetRegistrationsScreen(),
                     transitionDuration: const Duration(seconds : 0), 
                   ), 
                 );

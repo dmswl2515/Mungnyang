@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:totalexam/reference/constants.dart';
-import 'db/db_helper.dart';
+import 'package:totalexam/presentation/features/pet/screens/pet_registration_screen.dart';
 import 'reference/drawer.dart';
 import 'pages/page_a1.dart';
 import 'pages/page_b1.dart';
@@ -17,14 +14,9 @@ import 'pages/pagesC/page_c3.dart';
 import 'pages/page_d1.dart';
 import 'pages/page_e1.dart';
 import 'dart:math';
-import 'reference/text_provider.dart';
 import 'services/theme_services.dart';
 import 'reference/theme.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:totalexam/screens/musichome_screen.dart';
-import 'package:totalexam/screens/playlist_screen.dart';
-import 'package:totalexam/screens/song_screen.dart';
 
 class Mainhome extends StatefulWidget {
   const Mainhome({
@@ -244,9 +236,7 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.deepPurple.shade200,
                       borderRadius: BorderRadius.circular(40.0)),
                   child: GestureDetector(
-                    onTap: () => _navigateToPage(const PageC2(
-                      title: '반려동물 정보 입력',
-                    )),
+                    onTap: () => _navigateToPage(const PetRegistrationsScreen()),
                     child: const Icon(Icons.pets, color: Colors.black87),
                   ),
                 ),
